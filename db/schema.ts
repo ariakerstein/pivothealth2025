@@ -17,9 +17,8 @@ export const patientDocuments = pgTable("patient_documents", {
   patientId: serial("patient_id").references(() => patients.id),
   filename: text("filename").notNull(),
   contentType: text("content_type").notNull(),
-  // Using text type for bytea columns, as Drizzle will handle the conversion
-  encryptedData: text("encrypted_data", { mode: "bytea" }).notNull(),
-  encryptionIV: text("encryption_iv", { mode: "bytea" }).notNull(),
+  encryptedData: text("encrypted_data").notNull(),
+  encryptionIV: text("encryption_iv").notNull(),
   uploadedAt: timestamp("uploaded_at").defaultNow(),
   documentType: text("document_type").notNull(), // e.g., "lab_result", "prescription", "imaging"
   metadata: jsonb("metadata").$type<{
@@ -56,7 +55,7 @@ export const diagnosticTests = pgTable("diagnostic_tests", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   description: text("description").notNull(),
-  price: serial("price").notNull(),
+  price: integer("price").notNull(),
   preparationSteps: jsonb("preparation_steps").$type<string[]>().notNull(),
 });
 
@@ -72,7 +71,6 @@ export const riskAssessments = pgTable("risk_assessments", {
   id: serial("id").primaryKey(),
   patientId: serial("patient_id").references(() => patients.id),
   assessmentDate: date("assessment_date").notNull(),
-  // Storing all risk factors and their weights
   riskFactors: jsonb("risk_factors").$type<{
     age: number;
     psaLevel: number;
@@ -80,9 +78,7 @@ export const riskAssessments = pgTable("risk_assessments", {
     previousBiopsies: number;
     otherConditions: string[];
   }>().notNull(),
-  // Overall calculated risk score (0-100)
   riskScore: integer("risk_score").notNull(),
-  // Additional notes or recommendations
   notes: text("notes"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
