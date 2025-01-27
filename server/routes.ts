@@ -5,9 +5,41 @@ import { patients, diagnosticTests, recommendations, testOrders, patientDocument
 import { eq } from "drizzle-orm";
 import multer from "multer";
 import { encryptBuffer, decryptBuffer } from "./utils/encryption";
+import { riskAssessments } from "@db/schema"; // Import the riskAssessments schema
+
 
 // Configure multer for memory storage
 const upload = multer({ storage: multer.memoryStorage() });
+
+// Risk score calculation helper
+function calculateRiskScore(factors: any): number {
+  let score = 0;
+
+  // Age factor (0-25 points)
+  const age = factors.age;
+  if (age >= 70) score += 25;
+  else if (age >= 60) score += 20;
+  else if (age >= 50) score += 15;
+  else score += 10;
+
+  // PSA Level factor (0-35 points)
+  const psa = factors.psaLevel;
+  if (psa > 10) score += 35;
+  else if (psa > 4) score += 25;
+  else if (psa > 2.5) score += 15;
+  else score += 5;
+
+  // Family History factor (0-20 points)
+  if (factors.familyHistory) score += 20;
+
+  // Previous Biopsies factor (0-10 points)
+  score += Math.min(factors.previousBiopsies * 5, 10);
+
+  // Other conditions (0-10 points)
+  score += Math.min(factors.otherConditions.length * 2, 10);
+
+  return score;
+}
 
 export function registerRoutes(app: Express): Server {
   app.post("/api/patient/onboarding", async (req, res) => {
@@ -214,6 +246,69 @@ export function registerRoutes(app: Express): Server {
       res.status(500).json({ error: "Failed to fetch engagement metrics" });
     }
   });
+
+  // Risk Assessment endpoints
+  app.post("/api/risk-assessment", async (req, res) => {
+    try {
+      const riskFactors = req.body;
+      const riskScore = calculateRiskScore(riskFactors);
+
+      const [assessment] = await db
+        .insert(riskAssessments)
+        .values({
+          patientId: 1, // TODO: Get from auth
+          assessmentDate: new Date(),
+          riskFactors,
+          riskScore,
+          notes: generateRiskNotes(riskScore),
+        })
+        .returning();
+
+      res.json(assessment);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to create risk assessment" });
+    }
+  });
+
+  app.get("/api/risk-assessment/history", async (_req, res) => {
+    try {
+      const assessments = await db
+        .select()
+        .from(riskAssessments)
+        .orderBy(riskAssessments.assessmentDate);
+
+      res.json(assessments);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch risk assessment history" });
+    }
+  });
+
+  app.get("/api/risk-assessment/latest", async (_req, res) => {
+    try {
+      const [latest] = await db
+        .select()
+        .from(riskAssessments)
+        .orderBy(riskAssessments.assessmentDate)
+        .limit(1);
+
+      res.json(latest || null);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch latest risk assessment" });
+    }
+  });
+
+  // Helper function to generate risk notes
+  function generateRiskNotes(score: number): string {
+    if (score >= 80) {
+      return "High risk - Immediate consultation recommended";
+    } else if (score >= 60) {
+      return "Elevated risk - Schedule follow-up within 1 month";
+    } else if (score >= 40) {
+      return "Moderate risk - Regular monitoring advised";
+    } else {
+      return "Low risk - Continue routine screening";
+    }
+  }
 
   const httpServer = createServer(app);
   return httpServer;

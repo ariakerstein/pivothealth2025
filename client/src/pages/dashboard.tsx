@@ -12,6 +12,7 @@ import {
   ResponsiveContainer,
   ReferenceLine,
 } from "recharts";
+import RiskAssessmentCard from "@/components/risk-assessment/RiskAssessmentCard";
 
 interface ActivityItem {
   id: number;
@@ -122,45 +123,50 @@ export default function Dashboard() {
         </Card>
       </div>
 
-      {/* PSA Level Chart */}
-      <Card>
-        <CardHeader>
-          <CardTitle>PSA Levels Over Time</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={psaData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis
-                  dataKey="date"
-                  tickFormatter={(value) => new Date(value).toLocaleDateString()}
-                />
-                <YAxis 
-                  domain={[0, 7]}
-                  label={{ value: 'PSA (ng/ml)', angle: -90, position: 'insideLeft' }}
-                />
-                <Tooltip content={<PSARangeTooltip />} />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* PSA Level Chart */}
+        <Card>
+          <CardHeader>
+            <CardTitle>PSA Levels Over Time</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={psaData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis
+                    dataKey="date"
+                    tickFormatter={(value) => new Date(value).toLocaleDateString()}
+                  />
+                  <YAxis
+                    domain={[0, 7]}
+                    label={{ value: 'PSA (ng/ml)', angle: -90, position: 'insideLeft' }}
+                  />
+                  <Tooltip content={<PSARangeTooltip />} />
 
-                {/* Reference lines for normal ranges */}
-                <ReferenceLine y={2.5} stroke="#22c55e" strokeDasharray="3 3" label="Age 40-49 Max" />
-                <ReferenceLine y={3.5} stroke="#eab308" strokeDasharray="3 3" label="Age 50-59 Max" />
-                <ReferenceLine y={4.5} stroke="#f97316" strokeDasharray="3 3" label="Age 60-69 Max" />
-                <ReferenceLine y={6.5} stroke="#ef4444" strokeDasharray="3 3" label="Age 70+ Max" />
+                  {/* Reference lines for normal ranges */}
+                  <ReferenceLine y={2.5} stroke="#22c55e" strokeDasharray="3 3" label="Age 40-49 Max" />
+                  <ReferenceLine y={3.5} stroke="#eab308" strokeDasharray="3 3" label="Age 50-59 Max" />
+                  <ReferenceLine y={4.5} stroke="#f97316" strokeDasharray="3 3" label="Age 60-69 Max" />
+                  <ReferenceLine y={6.5} stroke="#ef4444" strokeDasharray="3 3" label="Age 70+ Max" />
 
-                <Line
-                  type="monotone"
-                  dataKey="psa"
-                  stroke="hsl(var(--primary))"
-                  strokeWidth={2}
-                  dot={{ r: 6 }}
-                  activeDot={{ r: 8 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </CardContent>
-      </Card>
+                  <Line
+                    type="monotone"
+                    dataKey="psa"
+                    stroke="hsl(var(--primary))"
+                    strokeWidth={2}
+                    dot={{ r: 6 }}
+                    activeDot={{ r: 8 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Risk Assessment */}
+        <RiskAssessmentCard />
+      </div>
 
       {/* Recent Activity */}
       <Card>

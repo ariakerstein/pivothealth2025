@@ -1,4 +1,4 @@
-import { pgTable, text, serial, timestamp, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, timestamp, jsonb, integer, date } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
 export const patients = pgTable("patients", {
@@ -54,6 +54,26 @@ export const testOrders = pgTable("test_orders", {
   orderedAt: timestamp("ordered_at").defaultNow(),
 });
 
+export const riskAssessments = pgTable("risk_assessments", {
+  id: serial("id").primaryKey(),
+  patientId: serial("patient_id").references(() => patients.id),
+  assessmentDate: date("assessment_date").notNull(),
+  // Storing all risk factors and their weights
+  riskFactors: jsonb("risk_factors").$type<{
+    age: number;
+    psaLevel: number;
+    familyHistory: boolean;
+    previousBiopsies: number;
+    otherConditions: string[];
+  }>().notNull(),
+  // Overall calculated risk score (0-100)
+  riskScore: integer("risk_score").notNull(),
+  // Additional notes or recommendations
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export type Patient = typeof patients.$inferSelect;
 export type NewPatient = typeof patients.$inferInsert;
 export type PatientDocument = typeof patientDocuments.$inferSelect;
@@ -63,3 +83,9 @@ export const insertPatientSchema = createInsertSchema(patients);
 export const selectPatientSchema = createSelectSchema(patients);
 export const insertPatientDocumentSchema = createInsertSchema(patientDocuments);
 export const selectPatientDocumentSchema = createSelectSchema(patientDocuments);
+
+export type RiskAssessment = typeof riskAssessments.$inferSelect;
+export type NewRiskAssessment = typeof riskAssessments.$inferInsert;
+
+export const insertRiskAssessmentSchema = createInsertSchema(riskAssessments);
+export const selectRiskAssessmentSchema = createSelectSchema(riskAssessments);
