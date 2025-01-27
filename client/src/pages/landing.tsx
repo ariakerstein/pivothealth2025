@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { Brain, Flask, Send } from "lucide-react";
+import { Brain, Beaker, Send } from "lucide-react";
 
 export default function LandingPage() {
   return (
@@ -18,7 +18,7 @@ export default function LandingPage() {
           <p className="text-xl text-gray-400 mb-8">
             Personalized navigation, diagnostics & support for <span className="underline">your</span> cancer journey.
           </p>
-          
+
           <div className="flex gap-4 max-w-md">
             <Input 
               type="email" 
@@ -41,7 +41,7 @@ export default function LandingPage() {
           <h2 className="text-3xl font-semibold text-center mb-16">
             How it works
           </h2>
-          
+
           <div className="grid md:grid-cols-3 gap-12">
             {/* Navigation & Discovery */}
             <Card className="bg-gray-900 border-gray-800 p-6">
@@ -72,7 +72,7 @@ export default function LandingPage() {
             {/* Trusted Diagnostics */}
             <Card className="bg-gray-900 border-gray-800 p-6">
               <div className="mb-4">
-                <Flask className="h-10 w-10 text-blue-500" />
+                <Beaker className="h-10 w-10 text-blue-500" />
               </div>
               <h3 className="text-xl font-semibold mb-4">Trusted Diagnostics</h3>
               <ul className="space-y-4">

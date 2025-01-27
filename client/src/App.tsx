@@ -10,22 +10,22 @@ import Tests from "@/pages/tests";
 import Documents from "@/pages/documents";
 import Dashboard from "@/pages/dashboard";
 import Navbar from "@/components/layout/Navbar";
+import LandingPage from "@/pages/landing";
 
 function Router() {
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
-      <main className="container mx-auto px-4 py-8">
-        <Switch>
-          <Route path="/" component={Home} />
-          <Route path="/dashboard" component={Dashboard} />
-          <Route path="/chat" component={Chat} />
-          <Route path="/recommendations" component={Recommendations} />
-          <Route path="/tests" component={Tests} />
-          <Route path="/documents" component={Documents} />
-          <Route component={NotFound} />
-        </Switch>
-      </main>
+      <Switch>
+        <Route path="/" component={LandingPage} />
+        {/* Protected routes */}
+        <Route path="/home" component={Home} />
+        <Route path="/dashboard" component={Dashboard} />
+        <Route path="/chat" component={Chat} />
+        <Route path="/recommendations" component={Recommendations} />
+        <Route path="/tests" component={Tests} />
+        <Route path="/documents" component={Documents} />
+        <Route component={NotFound} />
+      </Switch>
     </div>
   );
 }
