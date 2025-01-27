@@ -1,11 +1,10 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { db } from "@db";
-import { patients, diagnosticTests, recommendations, testOrders, patientDocuments, riskAssessments } from "@db/schema";
-import { eq } from "drizzle-orm";
+import { patients, diagnosticTests, recommendations, testOrders, patientDocuments, riskAssessments, achievements, patientAchievements, patientStreak } from "@db/schema";
+import { eq, sql } from "drizzle-orm";
 import multer from "multer";
 import { encryptBuffer, decryptBuffer } from "./utils/encryption";
-
 
 // Configure multer for memory storage
 const upload = multer({ storage: multer.memoryStorage() });
@@ -333,13 +332,14 @@ export function registerRoutes(app: Express): Server {
           newRecommendations.push({
             patientId,
             title: "Schedule Urologist Consultation",
-            description: "Your PSA levels are above normal range. It's recommended to consult with a urologist for further evaluation.",
+            description: "Your PSA levels are above normal range. A urologist can perform additional tests and provide expert evaluation.",
             category: "Screening",
             priority: "High",
             actionItems: [
               "Schedule appointment with urologist within 2 weeks",
               "Prepare list of current medications and symptoms",
-              "Bring recent PSA test results to appointment"
+              "Bring recent PSA test results to appointment",
+              "Write down any questions you have about elevated PSA levels"
             ],
             suggestedTests: [{
               testId: 1, // Assuming this is the ID for PSA test
@@ -359,13 +359,14 @@ export function registerRoutes(app: Express): Server {
           newRecommendations.push({
             patientId,
             title: "Regular Prostate Cancer Screening",
-            description: "Based on your age, regular prostate cancer screening is recommended.",
+            description: "Based on your age, regular prostate cancer screening is recommended. Let's set up your screening schedule.",
             category: "Prevention",
             priority: "Medium",
             actionItems: [
               "Schedule annual PSA test",
               "Discuss screening schedule with primary care physician",
-              "Learn about prostate health and prevention"
+              "Learn about prostate health and prevention strategies",
+              "Set reminders for future screenings"
             ],
             status: "active"
           });
@@ -376,13 +377,14 @@ export function registerRoutes(app: Express): Server {
           newRecommendations.push({
             patientId,
             title: "Lifestyle Modifications",
-            description: "Maintaining a healthy weight can help reduce health risks.",
+            description: "Our health coach can help you develop a personalized plan for maintaining a healthy weight and lifestyle.",
             category: "Lifestyle",
             priority: "Medium",
             actionItems: [
-              "Consult with nutritionist",
+              "Chat with our health coach to create a personalized plan",
               "Start regular exercise routine",
-              "Monitor weight weekly"
+              "Monitor weight weekly",
+              "Track daily physical activity"
             ],
             status: "active"
           });
@@ -393,13 +395,32 @@ export function registerRoutes(app: Express): Server {
           newRecommendations.push({
             patientId,
             title: "Comprehensive Health Evaluation",
-            description: "Your risk assessment indicates the need for a thorough health evaluation.",
+            description: "Your risk assessment suggests the need for a thorough health evaluation. Let's schedule this important check-up.",
             category: "Screening",
             priority: "High",
             actionItems: [
               "Schedule comprehensive health check-up",
-              "Complete all recommended screening tests",
-              "Follow up with specialist referrals"
+              "Complete recommended screening tests",
+              "Follow up with specialist referrals",
+              "Discuss risk factors with your healthcare provider"
+            ],
+            status: "active"
+          });
+        }
+
+        // Family history recommendations
+        if (riskFactors.familyHistory) {
+          newRecommendations.push({
+            patientId,
+            title: "Genetic Counseling Consultation",
+            description: "Given your family history, speaking with a genetic counselor can provide valuable insights about your health risks.",
+            category: "Screening",
+            priority: "Medium",
+            actionItems: [
+              "Schedule genetic counseling appointment",
+              "Gather detailed family medical history",
+              "Prepare questions about hereditary risks",
+              "Discuss preventive measures based on family history"
             ],
             status: "active"
           });
@@ -433,21 +454,177 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
+  // Achievement endpoints
+  app.get("/api/achievements", async (_req, res) => {
+    try {
+      const patientId = 1; // TODO: Get from auth
+      const [allAchievements, unlockedAchievements] = await Promise.all([
+        db.select().from(achievements),
+        db.select().from(patientAchievements).where(eq(patientAchievements.patientId, patientId)),
+      ]);
+
+      const achievementsWithProgress = allAchievements.map(achievement => {
+        const unlockedAchievement = unlockedAchievements.find(
+          ua => ua.achievementId === achievement.id
+        );
+
+        return {
+          ...achievement,
+          progress: unlockedAchievement?.progress || 0,
+          isUnlocked: !!unlockedAchievement,
+        };
+      });
+
+      res.json(achievementsWithProgress);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch achievements" });
+    }
+  });
+
+  app.get("/api/streak", async (_req, res) => {
+    try {
+      const patientId = 1; // TODO: Get from auth
+      const [streak] = await db
+        .select()
+        .from(patientStreak)
+        .where(eq(patientStreak.patientId, patientId))
+        .limit(1);
+
+      if (!streak || !streak.lastActivityDate) {
+        return res.json({ currentStreak: 0 });
+      }
+
+      // Check if streak is still valid (no more than 1 day gap)
+      const lastActivity = new Date(streak.lastActivityDate);
+      const today = new Date();
+      const daysSinceLastActivity = Math.floor(
+        (today.getTime() - lastActivity.getTime()) / (1000 * 60 * 60 * 24)
+      );
+
+      if (daysSinceLastActivity > 1) {
+        // Reset streak
+        await db
+          .update(patientStreak)
+          .set({
+            currentStreak: 0,
+            lastActivityDate: sql`CURRENT_DATE`,
+            streakStartDate: sql`CURRENT_DATE`,
+          })
+          .where(eq(patientStreak.id, streak.id));
+
+        return res.json({ currentStreak: 0 });
+      }
+
+      res.json({ currentStreak: streak.currentStreak });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch streak" });
+    }
+  });
+
+  // Update the recommendation status endpoint to handle achievements and streaks
   app.post("/api/recommendations/:id/status", async (req, res) => {
     try {
       const { status } = req.body;
+      const patientId = 1; // TODO: Get from auth
+      const recommendationId = parseInt(req.params.id);
+
+      // Update recommendation status
       const [updated] = await db
         .update(recommendations)
         .set({
           status,
-          completedAt: status === "completed" ? new Date() : null,
-          updatedAt: new Date()
+          completedAt: status === "completed" ? sql`CURRENT_TIMESTAMP` : null,
+          updatedAt: sql`CURRENT_TIMESTAMP`
         })
-        .where(eq(recommendations.id, parseInt(req.params.id)))
+        .where(eq(recommendations.id, recommendationId))
         .returning();
+
+      if (status === "completed") {
+        // Update streak
+        const today = new Date();
+        const [currentStreak] = await db
+          .select()
+          .from(patientStreak)
+          .where(eq(patientStreak.patientId, patientId))
+          .limit(1);
+
+        if (currentStreak && currentStreak.lastActivityDate) {
+          const daysSinceLastActivity = Math.floor(
+            (today.getTime() - new Date(currentStreak.lastActivityDate).getTime()) / (1000 * 60 * 60 * 24)
+          );
+
+          if (daysSinceLastActivity <= 1) {
+            // Continue streak
+            await db
+              .update(patientStreak)
+              .set({
+                currentStreak: currentStreak.currentStreak + 1,
+                longestStreak: sql`GREATEST(longest_streak, ${currentStreak.currentStreak + 1})`,
+                lastActivityDate: sql`CURRENT_DATE`,
+              })
+              .where(eq(patientStreak.id, currentStreak.id));
+          } else {
+            // Reset streak
+            await db
+              .update(patientStreak)
+              .set({
+                currentStreak: 1,
+                lastActivityDate: sql`CURRENT_DATE`,
+                streakStartDate: sql`CURRENT_DATE`,
+              })
+              .where(eq(patientStreak.id, currentStreak.id));
+          }
+        } else {
+          // Create first streak
+          await db.insert(patientStreak).values({
+            patientId,
+            currentStreak: 1,
+            longestStreak: 1,
+            lastActivityDate: sql`CURRENT_DATE`,
+            streakStartDate: sql`CURRENT_DATE`,
+          });
+        }
+
+        // Check and update achievements
+        const recommendationAchievements = await db
+          .select()
+          .from(achievements)
+          .where(
+            sql`requirement->>'type' = 'recommendation_completion'`
+          );
+
+        for (const achievement of recommendationAchievements) {
+          const target = achievement.requirement.target;
+          const [existing] = await db
+            .select()
+            .from(patientAchievements)
+            .where(
+              eq(patientAchievements.achievementId, achievement.id)
+            )
+            .limit(1);
+
+          if (!existing) {
+            await db.insert(patientAchievements).values({
+              patientId,
+              achievementId: achievement.id,
+              progress: Math.min((1 / target) * 100, 100),
+            });
+          } else {
+            const newProgress = Math.min(
+              ((existing.progress / 100) * target + 1) / target * 100,
+              100
+            );
+            await db
+              .update(patientAchievements)
+              .set({ progress: newProgress })
+              .where(eq(patientAchievements.id, existing.id));
+          }
+        }
+      }
 
       res.json(updated);
     } catch (error) {
+      console.error('Status update error:', error);
       res.status(500).json({ error: "Failed to update recommendation status" });
     }
   });

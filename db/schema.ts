@@ -14,7 +14,7 @@ export const patients = pgTable("patients", {
 
 export const patientDocuments = pgTable("patient_documents", {
   id: serial("id").primaryKey(),
-  patientId: serial("patient_id").references(() => patients.id),
+  patientId: integer("patient_id").references(() => patients.id),
   filename: text("filename").notNull(),
   contentType: text("content_type").notNull(),
   encryptedData: text("encrypted_data").notNull(),
@@ -30,7 +30,7 @@ export const patientDocuments = pgTable("patient_documents", {
 
 export const recommendations = pgTable("recommendations", {
   id: serial("id").primaryKey(),
-  patientId: serial("patient_id").references(() => patients.id),
+  patientId: integer("patient_id").references(() => patients.id),
   title: text("title").notNull(),
   description: text("description").notNull(),
   category: text("category").notNull(), // e.g., "Lifestyle", "Screening", "Prevention"
@@ -61,15 +61,15 @@ export const diagnosticTests = pgTable("diagnostic_tests", {
 
 export const testOrders = pgTable("test_orders", {
   id: serial("id").primaryKey(),
-  patientId: serial("patient_id").references(() => patients.id),
-  testId: serial("test_id").references(() => diagnosticTests.id),
+  patientId: integer("patient_id").references(() => patients.id),
+  testId: integer("test_id").references(() => diagnosticTests.id),
   status: text("status").notNull(),
   orderedAt: timestamp("ordered_at").defaultNow(),
 });
 
 export const riskAssessments = pgTable("risk_assessments", {
   id: serial("id").primaryKey(),
-  patientId: serial("patient_id").references(() => patients.id),
+  patientId: integer("patient_id").references(() => patients.id),
   assessmentDate: date("assessment_date").notNull(),
   riskFactors: jsonb("risk_factors").$type<{
     age: number;
@@ -84,24 +84,65 @@ export const riskAssessments = pgTable("risk_assessments", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+export const achievements = pgTable("achievements", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  icon: text("icon").notNull(), // Lucide icon name
+  category: text("category").notNull(), // e.g., "Prevention", "Engagement", "Progress"
+  requirement: jsonb("requirement").$type<{
+    type: "recommendation_completion" | "streak" | "health_score",
+    target: number,
+    timeframe?: string // e.g., "daily", "weekly", "monthly"
+  }>().notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const patientAchievements = pgTable("patient_achievements", {
+  id: serial("id").primaryKey(),
+  patientId: integer("patient_id").references(() => patients.id),
+  achievementId: integer("achievement_id").references(() => achievements.id),
+  unlockedAt: timestamp("unlocked_at").defaultNow(),
+  progress: integer("progress").notNull().default(0),
+});
+
+export const patientStreak = pgTable("patient_streak", {
+  id: serial("id").primaryKey(),
+  patientId: integer("patient_id").references(() => patients.id),
+  currentStreak: integer("current_streak").notNull().default(0),
+  longestStreak: integer("longest_streak").notNull().default(0),
+  lastActivityDate: date("last_activity_date"),
+  streakStartDate: date("streak_start_date"),
+});
+
+// Type exports and schema creation
 export type Patient = typeof patients.$inferSelect;
 export type NewPatient = typeof patients.$inferInsert;
 export type PatientDocument = typeof patientDocuments.$inferSelect;
 export type NewPatientDocument = typeof patientDocuments.$inferInsert;
+export type RiskAssessment = typeof riskAssessments.$inferSelect;
+export type NewRiskAssessment = typeof riskAssessments.$inferInsert;
+export type Recommendation = typeof recommendations.$inferSelect;
+export type NewRecommendation = typeof recommendations.$inferInsert;
+export type Achievement = typeof achievements.$inferSelect;
+export type NewAchievement = typeof achievements.$inferInsert;
+export type PatientAchievement = typeof patientAchievements.$inferSelect;
+export type NewPatientAchievement = typeof patientAchievements.$inferInsert;
+export type PatientStreak = typeof patientStreak.$inferSelect;
+export type NewPatientStreak = typeof patientStreak.$inferInsert;
 
+// Schema exports
 export const insertPatientSchema = createInsertSchema(patients);
 export const selectPatientSchema = createSelectSchema(patients);
 export const insertPatientDocumentSchema = createInsertSchema(patientDocuments);
 export const selectPatientDocumentSchema = createSelectSchema(patientDocuments);
-
-export type RiskAssessment = typeof riskAssessments.$inferSelect;
-export type NewRiskAssessment = typeof riskAssessments.$inferInsert;
-
 export const insertRiskAssessmentSchema = createInsertSchema(riskAssessments);
 export const selectRiskAssessmentSchema = createSelectSchema(riskAssessments);
-
-export type Recommendation = typeof recommendations.$inferSelect;
-export type NewRecommendation = typeof recommendations.$inferInsert;
-
 export const insertRecommendationSchema = createInsertSchema(recommendations);
 export const selectRecommendationSchema = createSelectSchema(recommendations);
+export const insertAchievementSchema = createInsertSchema(achievements);
+export const selectAchievementSchema = createSelectSchema(achievements);
+export const insertPatientAchievementSchema = createInsertSchema(patientAchievements);
+export const selectPatientAchievementSchema = createSelectSchema(patientAchievements);
+export const insertPatientStreakSchema = createInsertSchema(patientStreak);
+export const selectPatientStreakSchema = createSelectSchema(patientStreak);
