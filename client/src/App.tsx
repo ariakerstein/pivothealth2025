@@ -13,6 +13,7 @@ import LandingPage from "@/pages/landing";
 import AuthPage from "@/pages/auth-page";
 import { useUser } from "@/hooks/use-user";
 import { Loader2 } from "lucide-react";
+import Navbar from "@/components/layout/Navbar";
 
 function ProtectedRoute({ component: Component, ...rest }: { component: React.ComponentType }) {
   const { user, isLoading } = useUser();
@@ -30,7 +31,12 @@ function ProtectedRoute({ component: Component, ...rest }: { component: React.Co
     return null;
   }
 
-  return <Component {...rest} />;
+  return (
+    <>
+      <Navbar />
+      <Component {...rest} />
+    </>
+  );
 }
 
 function Router() {
