@@ -1,11 +1,10 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { db } from "@db";
-import { patients, diagnosticTests, recommendations, testOrders, patientDocuments } from "@db/schema";
+import { patients, diagnosticTests, recommendations, testOrders, patientDocuments, riskAssessments } from "@db/schema";
 import { eq } from "drizzle-orm";
 import multer from "multer";
 import { encryptBuffer, decryptBuffer } from "./utils/encryption";
-import { riskAssessments } from "@db/schema"; // Import the riskAssessments schema
 
 
 // Configure multer for memory storage
@@ -309,6 +308,149 @@ export function registerRoutes(app: Express): Server {
       return "Low risk - Continue routine screening";
     }
   }
+
+  // Recommendation Engine endpoints
+  app.post("/api/recommendations/generate", async (req, res) => {
+    try {
+      const patientId = 1; // TODO: Get from auth
+
+      // Fetch latest risk assessment
+      const [latestRisk] = await db
+        .select()
+        .from(riskAssessments)
+        .where(eq(riskAssessments.patientId, patientId))
+        .orderBy(riskAssessments.assessmentDate)
+        .limit(1);
+
+      // Generate recommendations based on risk factors
+      const newRecommendations = [];
+
+      if (latestRisk) {
+        const { riskFactors, riskScore } = latestRisk;
+
+        // High PSA Level recommendations
+        if (riskFactors.psaLevel > 4) {
+          newRecommendations.push({
+            patientId,
+            title: "Schedule Urologist Consultation",
+            description: "Your PSA levels are above normal range. It's recommended to consult with a urologist for further evaluation.",
+            category: "Screening",
+            priority: "High",
+            actionItems: [
+              "Schedule appointment with urologist within 2 weeks",
+              "Prepare list of current medications and symptoms",
+              "Bring recent PSA test results to appointment"
+            ],
+            suggestedTests: [{
+              testId: 1, // Assuming this is the ID for PSA test
+              reason: "Monitor PSA levels closely"
+            }],
+            supportingData: [{
+              type: "PSA",
+              value: riskFactors.psaLevel,
+              context: "Above normal range"
+            }],
+            status: "active"
+          });
+        }
+
+        // Age-based recommendations
+        if (riskFactors.age >= 50) {
+          newRecommendations.push({
+            patientId,
+            title: "Regular Prostate Cancer Screening",
+            description: "Based on your age, regular prostate cancer screening is recommended.",
+            category: "Prevention",
+            priority: "Medium",
+            actionItems: [
+              "Schedule annual PSA test",
+              "Discuss screening schedule with primary care physician",
+              "Learn about prostate health and prevention"
+            ],
+            status: "active"
+          });
+        }
+
+        // Lifestyle recommendations
+        if (riskFactors.otherConditions.includes("obesity")) {
+          newRecommendations.push({
+            patientId,
+            title: "Lifestyle Modifications",
+            description: "Maintaining a healthy weight can help reduce health risks.",
+            category: "Lifestyle",
+            priority: "Medium",
+            actionItems: [
+              "Consult with nutritionist",
+              "Start regular exercise routine",
+              "Monitor weight weekly"
+            ],
+            status: "active"
+          });
+        }
+
+        // High risk score recommendations
+        if (riskScore >= 60) {
+          newRecommendations.push({
+            patientId,
+            title: "Comprehensive Health Evaluation",
+            description: "Your risk assessment indicates the need for a thorough health evaluation.",
+            category: "Screening",
+            priority: "High",
+            actionItems: [
+              "Schedule comprehensive health check-up",
+              "Complete all recommended screening tests",
+              "Follow up with specialist referrals"
+            ],
+            status: "active"
+          });
+        }
+      }
+
+      // Insert new recommendations
+      const createdRecommendations = await db
+        .insert(recommendations)
+        .values(newRecommendations)
+        .returning();
+
+      res.json(createdRecommendations);
+    } catch (error) {
+      console.error('Recommendation generation error:', error);
+      res.status(500).json({ error: "Failed to generate recommendations" });
+    }
+  });
+
+  app.get("/api/recommendations/active", async (_req, res) => {
+    try {
+      const activeRecommendations = await db
+        .select()
+        .from(recommendations)
+        .where(eq(recommendations.status, "active"))
+        .orderBy(recommendations.createdAt);
+
+      res.json(activeRecommendations);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch recommendations" });
+    }
+  });
+
+  app.post("/api/recommendations/:id/status", async (req, res) => {
+    try {
+      const { status } = req.body;
+      const [updated] = await db
+        .update(recommendations)
+        .set({
+          status,
+          completedAt: status === "completed" ? new Date() : null,
+          updatedAt: new Date()
+        })
+        .where(eq(recommendations.id, parseInt(req.params.id)))
+        .returning();
+
+      res.json(updated);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update recommendation status" });
+    }
+  });
 
   const httpServer = createServer(app);
   return httpServer;

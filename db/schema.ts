@@ -34,8 +34,22 @@ export const recommendations = pgTable("recommendations", {
   patientId: serial("patient_id").references(() => patients.id),
   title: text("title").notNull(),
   description: text("description").notNull(),
+  category: text("category").notNull(), // e.g., "Lifestyle", "Screening", "Prevention"
+  priority: text("priority").notNull(), // "High", "Medium", "Low"
   actionItems: jsonb("action_items").$type<string[]>().notNull(),
+  suggestedTests: jsonb("suggested_tests").$type<{
+    testId: number;
+    reason: string;
+  }[]>(),
+  supportingData: jsonb("supporting_data").$type<{
+    type: string;
+    value: number;
+    context: string;
+  }[]>(),
+  status: text("status").notNull().default("active"), // "active", "completed", "dismissed"
   createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  completedAt: timestamp("completed_at"),
 });
 
 export const diagnosticTests = pgTable("diagnostic_tests", {
@@ -89,3 +103,9 @@ export type NewRiskAssessment = typeof riskAssessments.$inferInsert;
 
 export const insertRiskAssessmentSchema = createInsertSchema(riskAssessments);
 export const selectRiskAssessmentSchema = createSelectSchema(riskAssessments);
+
+export type Recommendation = typeof recommendations.$inferSelect;
+export type NewRecommendation = typeof recommendations.$inferInsert;
+
+export const insertRecommendationSchema = createInsertSchema(recommendations);
+export const selectRecommendationSchema = createSelectSchema(recommendations);
