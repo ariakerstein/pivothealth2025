@@ -1,117 +1,113 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
-import { Brain, Beaker, Send } from "lucide-react";
+import { Brain, Beaker, Users } from "lucide-react";
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white">
       {/* Hero Section */}
-      <div className="container mx-auto px-4 pt-20 pb-12">
-        <div className="max-w-3xl">
-          <h1 className="text-5xl font-semibold mb-4">
-            Pivot Health
-          </h1>
-          <h2 className="text-4xl font-semibold mb-6">
+      <div className="container mx-auto px-4 lg:px-8">
+        <nav className="py-6 flex justify-between items-center">
+          <h1 className="text-2xl font-bold">Pivot Health</h1>
+          <div className="flex gap-4">
+            <Button variant="ghost" className="text-white hover:text-white">Login</Button>
+            <Button className="bg-blue-600 hover:bg-blue-700">Sign Up</Button>
+          </div>
+        </nav>
+
+        <div className="py-24 lg:py-32 max-w-4xl mx-auto text-center">
+          <h2 className="text-5xl lg:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-blue-600">
             Your cancer co-pilot
           </h2>
-          <p className="text-xl text-gray-400 mb-8">
-            Personalized navigation, diagnostics & support for <span className="underline">your</span> cancer journey.
+          <p className="text-xl lg:text-2xl text-gray-300 mb-12 leading-relaxed">
+            Personalized navigation, diagnostics & support for{" "}
+            <span className="text-blue-400">your</span> cancer journey.
           </p>
-
-          <div className="flex gap-4 max-w-md">
-            <Input 
-              type="email" 
-              placeholder="Email" 
-              className="bg-gray-900 border-gray-800"
-            />
-            <Button 
-              className="bg-orange-500 hover:bg-orange-600 text-white px-8"
-            >
-              JOIN THE WAITLIST
-              <Send className="ml-2 h-4 w-4" />
-            </Button>
-          </div>
         </div>
       </div>
 
       {/* How it works Section */}
-      <section className="bg-black py-20">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-semibold text-center mb-16">
+      <section className="py-24 lg:py-32 bg-black/50 backdrop-blur-sm">
+        <div className="container mx-auto px-4 lg:px-8">
+          <h2 className="text-3xl lg:text-4xl font-bold text-center mb-16">
             How it works
           </h2>
 
-          <div className="grid md:grid-cols-3 gap-12">
+          <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
             {/* Navigation & Discovery */}
-            <Card className="bg-gray-900 border-gray-800 p-6">
-              <div className="mb-4">
-                <Brain className="h-10 w-10 text-blue-500" />
+            <div className="rounded-2xl bg-gradient-to-b from-gray-800/50 to-gray-900/50 p-8 backdrop-blur-sm border border-gray-800">
+              <div className="mb-6">
+                <div className="w-14 h-14 rounded-xl bg-blue-500/10 flex items-center justify-center">
+                  <Brain className="h-7 w-7 text-blue-400" />
+                </div>
               </div>
               <h3 className="text-xl font-semibold mb-4">Navigation & Discovery</h3>
-              <ul className="space-y-4">
-                <li className="flex gap-2 text-gray-400">
-                  <span className="text-blue-500">→</span>
-                  Ask questions to your medically-trained, always available AI Co-pilot
+              <ul className="space-y-3 text-gray-300">
+                <li className="flex gap-3">
+                  <span className="text-blue-400 shrink-0">→</span>
+                  <span>Ask questions to your medically-trained AI Co-pilot</span>
                 </li>
-                <li className="flex gap-2 text-gray-400">
-                  <span className="text-blue-500">→</span>
-                  Find high trust doctors, products & services relevant to each step in your care journey.
+                <li className="flex gap-3">
+                  <span className="text-blue-400 shrink-0">→</span>
+                  <span>Find trusted doctors & services for your care journey</span>
                 </li>
-                <li className="flex gap-2 text-gray-400">
-                  <span className="text-blue-500">→</span>
-                  Tailored recommendations support your treatment decisions.
+                <li className="flex gap-3">
+                  <span className="text-blue-400 shrink-0">→</span>
+                  <span>Get personalized treatment recommendations</span>
                 </li>
-                <li className="flex gap-2 text-gray-400">
-                  <span className="text-blue-500">→</span>
-                  Secure records sharing and storage.
+                <li className="flex gap-3">
+                  <span className="text-blue-400 shrink-0">→</span>
+                  <span>Secure medical records management</span>
                 </li>
               </ul>
-            </Card>
+            </div>
 
             {/* Trusted Diagnostics */}
-            <Card className="bg-gray-900 border-gray-800 p-6">
-              <div className="mb-4">
-                <Beaker className="h-10 w-10 text-blue-500" />
+            <div className="rounded-2xl bg-gradient-to-b from-gray-800/50 to-gray-900/50 p-8 backdrop-blur-sm border border-gray-800">
+              <div className="mb-6">
+                <div className="w-14 h-14 rounded-xl bg-blue-500/10 flex items-center justify-center">
+                  <Beaker className="h-7 w-7 text-blue-400" />
+                </div>
               </div>
               <h3 className="text-xl font-semibold mb-4">Trusted Diagnostics</h3>
-              <ul className="space-y-4">
-                <li className="flex gap-2 text-gray-400">
-                  <span className="text-blue-500">→</span>
-                  We'll order the right tests, with clear pricing, at the most convenient location (many at home).
+              <ul className="space-y-3 text-gray-300">
+                <li className="flex gap-3">
+                  <span className="text-blue-400 shrink-0">→</span>
+                  <span>Convenient test ordering with transparent pricing</span>
                 </li>
-                <li className="flex gap-2 text-gray-400">
-                  <span className="text-blue-500">→</span>
-                  Review test results with a team of experts deeply familiar with your diagnosis.
+                <li className="flex gap-3">
+                  <span className="text-blue-400 shrink-0">→</span>
+                  <span>Expert review of your test results</span>
                 </li>
-                <li className="flex gap-2 text-gray-400">
-                  <span className="text-blue-500">→</span>
-                  Decide your best next steps with personalized, holistic care plans tailored to your unique situation.
+                <li className="flex gap-3">
+                  <span className="text-blue-400 shrink-0">→</span>
+                  <span>Personalized care plans for your situation</span>
                 </li>
               </ul>
-            </Card>
+            </div>
 
             {/* Support Community */}
-            <Card className="bg-gray-900 border-gray-800 p-6">
-              <div className="mb-4">
-                <Send className="h-10 w-10 text-blue-500" />
+            <div className="rounded-2xl bg-gradient-to-b from-gray-800/50 to-gray-900/50 p-8 backdrop-blur-sm border border-gray-800">
+              <div className="mb-6">
+                <div className="w-14 h-14 rounded-xl bg-blue-500/10 flex items-center justify-center">
+                  <Users className="h-7 w-7 text-blue-400" />
+                </div>
               </div>
               <h3 className="text-xl font-semibold mb-4">Support Community</h3>
-              <ul className="space-y-4">
-                <li className="flex gap-2 text-gray-400">
-                  <span className="text-blue-500">→</span>
-                  Leverage the wisdom of crowds with community-vetted protocols.
+              <ul className="space-y-3 text-gray-300">
+                <li className="flex gap-3">
+                  <span className="text-blue-400 shrink-0">→</span>
+                  <span>Access community-vetted treatment protocols</span>
                 </li>
-                <li className="flex gap-2 text-gray-400">
-                  <span className="text-blue-500">→</span>
-                  Connect with a support network of patients that have already traveled the road you're on.
+                <li className="flex gap-3">
+                  <span className="text-blue-400 shrink-0">→</span>
+                  <span>Connect with others on similar journeys</span>
                 </li>
-                <li className="flex gap-2 text-gray-400">
-                  <span className="text-blue-500">→</span>
-                  Empower your own network (family, loved ones) with tools to help them best support you.
+                <li className="flex gap-3">
+                  <span className="text-blue-400 shrink-0">→</span>
+                  <span>Tools for family & caregivers to support you</span>
                 </li>
               </ul>
-            </Card>
+            </div>
           </div>
         </div>
       </section>
