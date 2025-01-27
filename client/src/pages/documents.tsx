@@ -6,6 +6,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Loader2, FileText, Upload, Link as LinkIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import {
+  Dialog,
+  DialogContent,
+} from "@/components/ui/dialog";
+import EHRWizard from "@/components/ehr/EHRWizard";
 
 interface Document {
   id: number;
@@ -23,6 +28,7 @@ interface Document {
 export default function Documents() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [documentType, setDocumentType] = useState<string>("medical_record");
+  const [showEHRWizard, setShowEHRWizard] = useState(false);
   const { toast } = useToast();
 
   const { data: documents, isLoading, refetch } = useQuery<Document[]>({
@@ -91,10 +97,7 @@ export default function Documents() {
   };
 
   const handleEHRConnect = () => {
-    toast({
-      title: "Coming Soon",
-      description: "EHR integration is currently in development. We'll notify you when it's ready!",
-    });
+    setShowEHRWizard(true);
   };
 
   return (
@@ -122,6 +125,13 @@ export default function Documents() {
           </div>
         </CardContent>
       </Card>
+
+      {/* EHR Connection Wizard */}
+      <Dialog open={showEHRWizard} onOpenChange={setShowEHRWizard}>
+        <DialogContent className="max-w-4xl">
+          <EHRWizard onClose={() => setShowEHRWizard(false)} />
+        </DialogContent>
+      </Dialog>
 
       {/* Upload Document Card */}
       <Card>
