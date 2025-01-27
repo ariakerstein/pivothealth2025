@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Loader2, FileText, Upload } from "lucide-react";
+import { Loader2, FileText, Upload, Link as LinkIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface Document {
@@ -90,8 +90,40 @@ export default function Documents() {
     return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
   };
 
+  const handleEHRConnect = () => {
+    toast({
+      title: "Coming Soon",
+      description: "EHR integration is currently in development. We'll notify you when it's ready!",
+    });
+  };
+
   return (
     <div className="max-w-4xl mx-auto space-y-6">
+      {/* EHR Integration Card */}
+      <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <LinkIcon className="h-5 w-5" />
+            Connect with Your Healthcare Provider
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-muted-foreground">
+            Securely connect with your healthcare provider's Electronic Health Record (EHR) system 
+            to automatically import your medical documents and records.
+          </p>
+          <div className="flex gap-4">
+            <Button onClick={handleEHRConnect} className="bg-blue-600 hover:bg-blue-700">
+              Connect to Provider EHR
+            </Button>
+            <Button variant="outline" onClick={handleEHRConnect}>
+              Learn More
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Upload Document Card */}
       <Card>
         <CardHeader>
           <CardTitle>Upload Document</CardTitle>
