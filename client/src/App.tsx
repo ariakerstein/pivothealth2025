@@ -8,6 +8,7 @@ import Chat from "@/pages/chat";
 import Recommendations from "@/pages/recommendations";
 import Tests from "@/pages/tests";
 import Documents from "@/pages/documents";
+import Dashboard from "@/pages/dashboard";
 import Navbar from "@/components/layout/Navbar";
 
 function Router() {
@@ -17,6 +18,7 @@ function Router() {
       <main className="container mx-auto px-4 py-8">
         <Switch>
           <Route path="/" component={Home} />
+          <Route path="/dashboard" component={Dashboard} />
           <Route path="/chat" component={Chat} />
           <Route path="/recommendations" component={Recommendations} />
           <Route path="/tests" component={Tests} />

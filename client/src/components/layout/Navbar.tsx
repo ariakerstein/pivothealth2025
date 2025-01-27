@@ -4,6 +4,7 @@ import { Logo } from "@/components/ui/logo";
 
 const navItems = [
   { href: "/", label: "Home" },
+  { href: "/dashboard", label: "Dashboard" },
   { href: "/chat", label: "AI Chat" },
   { href: "/recommendations", label: "Recommendations" },
   { href: "/tests", label: "Order Tests" },

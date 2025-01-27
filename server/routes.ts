@@ -162,6 +162,59 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
+  // New dashboard routes
+  app.get("/api/patient/activities", async (_req, res) => {
+    try {
+      // For now, we'll combine activities from different sources
+      const [documents, orders] = await Promise.all([
+        db.select().from(patientDocuments).limit(5),
+        db.select().from(testOrders).limit(5),
+      ]);
+
+      const activities = [
+        ...documents.map(doc => ({
+          id: doc.id,
+          type: 'document',
+          description: `Uploaded document: ${doc.filename}`,
+          timestamp: doc.uploadedAt.toISOString(),
+        })),
+        ...orders.map(order => ({
+          id: order.id,
+          type: 'test_order',
+          description: `Ordered test #${order.testId}`,
+          timestamp: order.orderedAt.toISOString(),
+        })),
+      ].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
+      res.json(activities);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch activities" });
+    }
+  });
+
+  app.get("/api/patient/engagement-metrics", async (_req, res) => {
+    try {
+      const [
+        documentCount,
+        testOrderCount,
+        recommendationCount,
+      ] = await Promise.all([
+        db.select().from(patientDocuments).limit(1000),
+        db.select().from(testOrders).limit(1000),
+        db.select().from(recommendations).limit(1000),
+      ]);
+
+      res.json({
+        documentUploads: documentCount.length,
+        testOrders: testOrderCount.length,
+        chatInteractions: 5, // Placeholder
+        recommendationsViewed: recommendationCount.length,
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch engagement metrics" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
