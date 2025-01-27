@@ -1,14 +1,32 @@
 import { Button } from "@/components/ui/button";
+import { useLocation } from "wouter";
 
 export default function LandingPage() {
+  const [, setLocation] = useLocation();
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white">
       <div className="container mx-auto px-4 lg:px-8">
         <nav className="py-6 flex justify-between items-center">
           <h1 className="text-2xl font-bold">Pivot Health</h1>
           <div className="flex gap-4">
-            <Button variant="ghost" className="text-white hover:text-white">Login</Button>
-            <Button className="bg-blue-600 hover:bg-blue-700">Sign Up</Button>
+            <Button 
+              variant="ghost" 
+              className="text-white hover:text-white"
+              onClick={() => setLocation('/auth')}
+            >
+              Login
+            </Button>
+            <Button 
+              className="bg-blue-600 hover:bg-blue-700"
+              onClick={() => {
+                setLocation('/auth');
+                // You could also pass a query parameter to pre-select signup mode
+                // but for simplicity we'll just let users click the signup button on the auth page
+              }}
+            >
+              Sign Up
+            </Button>
           </div>
         </nav>
 

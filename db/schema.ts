@@ -1,6 +1,19 @@
 import { pgTable, text, serial, timestamp, jsonb, integer, date } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
+// User Authentication Schema
+export const users = pgTable("users", {
+  id: serial("id").primaryKey(),
+  username: text("username").unique().notNull(),
+  password: text("password").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertUserSchema = createInsertSchema(users);
+export const selectUserSchema = createSelectSchema(users);
+export type InsertUser = typeof users.$inferInsert;
+export type SelectUser = typeof users.$inferSelect;
+
 export const patients = pgTable("patients", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
@@ -115,7 +128,6 @@ export const patientStreak = pgTable("patient_streak", {
   streakStartDate: date("streak_start_date"),
 });
 
-// Type exports and schema creation
 export type Patient = typeof patients.$inferSelect;
 export type NewPatient = typeof patients.$inferInsert;
 export type PatientDocument = typeof patientDocuments.$inferSelect;
@@ -131,7 +143,6 @@ export type NewPatientAchievement = typeof patientAchievements.$inferInsert;
 export type PatientStreak = typeof patientStreak.$inferSelect;
 export type NewPatientStreak = typeof patientStreak.$inferInsert;
 
-// Schema exports
 export const insertPatientSchema = createInsertSchema(patients);
 export const selectPatientSchema = createSelectSchema(patients);
 export const insertPatientDocumentSchema = createInsertSchema(patientDocuments);

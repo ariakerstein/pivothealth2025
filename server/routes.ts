@@ -5,6 +5,7 @@ import { patients, diagnosticTests, recommendations, testOrders, patientDocument
 import { eq, sql } from "drizzle-orm";
 import multer from "multer";
 import { encryptBuffer, decryptBuffer } from "./utils/encryption";
+import { setupAuth } from "./auth";
 
 // Configure multer for memory storage
 const upload = multer({ storage: multer.memoryStorage() });
@@ -40,6 +41,11 @@ function calculateRiskScore(factors: any): number {
 }
 
 export function registerRoutes(app: Express): Server {
+  // sets up /api/register, /api/login, /api/logout, /api/user
+  setupAuth(app);
+
+  // put application routes here
+  // prefix all routes with /api
   app.post("/api/patient/onboarding", async (req, res) => {
     try {
       const [patient] = await db

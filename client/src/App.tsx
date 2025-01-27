@@ -9,21 +9,44 @@ import Recommendations from "@/pages/recommendations";
 import Tests from "@/pages/tests";
 import Documents from "@/pages/documents";
 import Dashboard from "@/pages/dashboard";
-import Navbar from "@/components/layout/Navbar";
 import LandingPage from "@/pages/landing";
+import AuthPage from "@/pages/auth-page";
+import { useUser } from "@/hooks/use-user";
+import { Loader2 } from "lucide-react";
+
+function ProtectedRoute({ component: Component, ...rest }: { component: React.ComponentType }) {
+  const { user, isLoading } = useUser();
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    window.location.href = '/auth';
+    return null;
+  }
+
+  return <Component {...rest} />;
+}
 
 function Router() {
   return (
     <div className="min-h-screen bg-background">
       <Switch>
         <Route path="/" component={LandingPage} />
+        <Route path="/auth" component={AuthPage} />
+
         {/* Protected routes */}
-        <Route path="/home" component={Home} />
-        <Route path="/dashboard" component={Dashboard} />
-        <Route path="/chat" component={Chat} />
-        <Route path="/recommendations" component={Recommendations} />
-        <Route path="/tests" component={Tests} />
-        <Route path="/documents" component={Documents} />
+        <Route path="/home" component={() => <ProtectedRoute component={Home} />} />
+        <Route path="/dashboard" component={() => <ProtectedRoute component={Dashboard} />} />
+        <Route path="/chat" component={() => <ProtectedRoute component={Chat} />} />
+        <Route path="/recommendations" component={() => <ProtectedRoute component={Recommendations} />} />
+        <Route path="/tests" component={() => <ProtectedRoute component={Tests} />} />
+        <Route path="/documents" component={() => <ProtectedRoute component={Documents} />} />
         <Route component={NotFound} />
       </Switch>
     </div>
