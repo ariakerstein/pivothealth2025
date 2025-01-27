@@ -7,6 +7,7 @@ import Home from "@/pages/home";
 import Chat from "@/pages/chat";
 import Recommendations from "@/pages/recommendations";
 import Tests from "@/pages/tests";
+import Documents from "@/pages/documents";
 import Navbar from "@/components/layout/Navbar";
 
 function Router() {
@@ -19,6 +20,7 @@ function Router() {
           <Route path="/chat" component={Chat} />
           <Route path="/recommendations" component={Recommendations} />
           <Route path="/tests" component={Tests} />
+          <Route path="/documents" component={Documents} />
           <Route component={NotFound} />
         </Switch>
       </main>
