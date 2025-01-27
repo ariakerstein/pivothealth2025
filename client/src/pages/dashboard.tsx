@@ -9,7 +9,8 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  ResponsiveContainer
+  ResponsiveContainer,
+  ReferenceLine,
 } from "recharts";
 
 interface ActivityItem {
@@ -26,6 +27,40 @@ interface EngagementMetrics {
   recommendationsViewed: number;
 }
 
+// Sample PSA data (to be replaced with real data from backend)
+const psaData = [
+  { date: '2024-01-01', psa: 0.8 },
+  { date: '2024-01-15', psa: 1.2 },
+  { date: '2024-02-01', psa: 0.9 },
+  { date: '2024-02-15', psa: 1.1 },
+  { date: '2024-03-01', psa: 1.0 },
+];
+
+const PSARangeTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    const psaValue = payload[0].value;
+    const getRange = (value: number) => {
+      // Age-based ranges (assuming patient age for this example)
+      const age = 55; // This should come from patient data
+      if (age < 50) return '0-2.5';
+      if (age < 60) return '0-3.5';
+      if (age < 70) return '0-4.5';
+      return '0-6.5';
+    };
+
+    return (
+      <div className="bg-white p-2 shadow rounded border">
+        <p className="font-medium">Date: {label}</p>
+        <p>PSA Level: {psaValue} ng/ml</p>
+        <p className="text-sm text-muted-foreground">
+          Normal Range: {getRange(psaValue)} ng/ml
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
+
 export default function Dashboard() {
   const { data: activities, isLoading: loadingActivities } = useQuery<ActivityItem[]>({
     queryKey: ['/api/patient/activities'],
@@ -34,17 +69,6 @@ export default function Dashboard() {
   const { data: metrics, isLoading: loadingMetrics } = useQuery<EngagementMetrics>({
     queryKey: ['/api/patient/engagement-metrics'],
   });
-
-  // Sample data for the engagement chart
-  const engagementData = [
-    { name: 'Mon', interactions: 4 },
-    { name: 'Tue', interactions: 3 },
-    { name: 'Wed', interactions: 5 },
-    { name: 'Thu', interactions: 2 },
-    { name: 'Fri', interactions: 6 },
-    { name: 'Sat', interactions: 4 },
-    { name: 'Sun', interactions: 3 },
-  ];
 
   if (loadingActivities || loadingMetrics) {
     return (
@@ -98,24 +122,39 @@ export default function Dashboard() {
         </Card>
       </div>
 
-      {/* Engagement Chart */}
+      {/* PSA Level Chart */}
       <Card>
         <CardHeader>
-          <CardTitle>Weekly Engagement</CardTitle>
+          <CardTitle>PSA Levels Over Time</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={engagementData}>
+              <LineChart data={psaData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Line 
-                  type="monotone" 
-                  dataKey="interactions" 
+                <XAxis
+                  dataKey="date"
+                  tickFormatter={(value) => new Date(value).toLocaleDateString()}
+                />
+                <YAxis 
+                  domain={[0, 7]}
+                  label={{ value: 'PSA (ng/ml)', angle: -90, position: 'insideLeft' }}
+                />
+                <Tooltip content={<PSARangeTooltip />} />
+
+                {/* Reference lines for normal ranges */}
+                <ReferenceLine y={2.5} stroke="#22c55e" strokeDasharray="3 3" label="Age 40-49 Max" />
+                <ReferenceLine y={3.5} stroke="#eab308" strokeDasharray="3 3" label="Age 50-59 Max" />
+                <ReferenceLine y={4.5} stroke="#f97316" strokeDasharray="3 3" label="Age 60-69 Max" />
+                <ReferenceLine y={6.5} stroke="#ef4444" strokeDasharray="3 3" label="Age 70+ Max" />
+
+                <Line
+                  type="monotone"
+                  dataKey="psa"
                   stroke="hsl(var(--primary))"
                   strokeWidth={2}
+                  dot={{ r: 6 }}
+                  activeDot={{ r: 8 }}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -137,7 +176,7 @@ export default function Dashboard() {
                     {activity.description}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    {new Date(activity.timestamp).toLocaleString()}
+                    {new Date(activity.timestamp).toLocaleDateString()}
                   </p>
                 </div>
               </div>
