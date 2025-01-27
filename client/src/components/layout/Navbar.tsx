@@ -7,6 +7,7 @@ const navItems = [
   { href: "/chat", label: "AI Chat" },
   { href: "/recommendations", label: "Recommendations" },
   { href: "/tests", label: "Order Tests" },
+  { href: "/documents", label: "Documents" },
 ];
 
 export default function Navbar() {
