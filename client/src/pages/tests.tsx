@@ -71,6 +71,8 @@ export default function DiscoverPage() {
     return activeCategory === "all" || service.category === activeCategory;
   });
 
+  const recommendedServices = services?.filter(isRecommendedService);
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
@@ -78,6 +80,43 @@ export default function DiscoverPage() {
       </div>
     );
   }
+
+  const ServiceCard = ({ service }: { service: Service }) => (
+    <Card 
+      key={service.id} 
+      className="cursor-pointer hover:shadow-lg transition-shadow"
+      onClick={() => setSelectedService(service)}
+    >
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          {service.name}
+          {service.insuranceCoverage ? (
+            <CheckCircle2 className="h-5 w-5 text-green-500" />
+          ) : (
+            <XCircle className="h-5 w-5 text-red-500" />
+          )}
+        </CardTitle>
+        <CardDescription>
+          {service.description}
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="flex justify-between items-center">
+          <div>
+            <span className="font-semibold">
+              ${(service.price / 100).toFixed(2)}
+            </span>
+            <span className="text-sm text-muted-foreground ml-2">
+              {service.insuranceCoverage ? '(Covered by Insurance)' : '(Self-Pay)'}
+            </span>
+          </div>
+          <Button variant="outline" size="sm">
+            Learn More
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
 
   return (
     <div className="container mx-auto py-8 px-4">
@@ -110,42 +149,25 @@ export default function DiscoverPage() {
             </div>
           )}
 
+          {activeCategory === "all" && recommendedServices && recommendedServices.length > 0 && (
+            <div className="mb-12">
+              <div className="bg-blue-50 dark:bg-blue-950 p-4 rounded-lg mb-6">
+                <h3 className="text-lg font-semibold">Recommended for You</h3>
+                <p className="text-sm text-muted-foreground">
+                  Services tailored to your current health journey
+                </p>
+              </div>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {recommendedServices.map((service) => (
+                  <ServiceCard key={service.id} service={service} />
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredServices?.map((service) => (
-              <Card 
-                key={service.id} 
-                className="cursor-pointer hover:shadow-lg transition-shadow"
-                onClick={() => setSelectedService(service)}
-              >
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    {service.name}
-                    {service.insuranceCoverage ? (
-                      <CheckCircle2 className="h-5 w-5 text-green-500" />
-                    ) : (
-                      <XCircle className="h-5 w-5 text-red-500" />
-                    )}
-                  </CardTitle>
-                  <CardDescription>
-                    {service.description}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <span className="font-semibold">
-                        ${(service.price / 100).toFixed(2)}
-                      </span>
-                      <span className="text-sm text-muted-foreground ml-2">
-                        {service.insuranceCoverage ? '(Covered by Insurance)' : '(Self-Pay)'}
-                      </span>
-                    </div>
-                    <Button variant="outline" size="sm">
-                      Learn More
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+              <ServiceCard key={service.id} service={service} />
             ))}
           </div>
         </TabsContent>
