@@ -12,6 +12,7 @@ import Dashboard from "@/pages/dashboard";
 import LandingPage from "@/pages/landing";
 import AuthPage from "@/pages/auth-page";
 import Community from "@/pages/community";
+import Mentor from "@/pages/mentor";
 import { useUser } from "@/hooks/use-user";
 import { Loader2 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
@@ -45,7 +46,6 @@ function Router() {
   const { user, isLoading } = useUser();
   const [, setLocation] = useLocation();
 
-  // Show loading spinner while checking auth status
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -69,6 +69,7 @@ function Router() {
         <Route path="/discover" component={() => <ProtectedRoute component={Tests} />} />
         <Route path="/documents" component={() => <ProtectedRoute component={Documents} />} />
         <Route path="/community" component={() => <ProtectedRoute component={Community} />} />
+        <Route path="/mentor" component={() => <ProtectedRoute component={Mentor} />} />
         <Route component={NotFound} />
       </Switch>
     </div>
