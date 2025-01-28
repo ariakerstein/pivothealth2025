@@ -7,6 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
 import { MessageCircle, Users, UserPlus, Heart, Calendar, Award } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -29,15 +30,24 @@ interface DiscussionTopic {
   tags: string[];
 }
 
+interface Mentee {
+  id: number;
+  name: string;
+  avatar?: string;
+  diagnosis: string;
+  stage: string;
+  status: string;
+}
+
 export default function CommunityPage() {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("similar-patients");
 
-  const { data: similarPatients } = useQuery<PatientProfile[]>({
+  const { data: similarPatients = [] } = useQuery<PatientProfile[]>({
     queryKey: ['/api/community/similar-patients'],
   });
 
-  const { data: discussionTopics } = useQuery<DiscussionTopic[]>({
+  const { data: discussionTopics = [] } = useQuery<DiscussionTopic[]>({
     queryKey: ['/api/community/discussions'],
   });
 
@@ -45,11 +55,11 @@ export default function CommunityPage() {
     queryKey: ['/api/mentor/profile'],
   });
 
-  const { data: mentees } = useQuery({
+  const { data: mentees = [] } = useQuery<Mentee[]>({
     queryKey: ['/api/mentor/mentees'],
   });
 
-  const { data: requests } = useQuery({
+  const { data: requests = [] } = useQuery<Mentee[]>({
     queryKey: ['/api/mentor/requests'],
   });
 
@@ -201,7 +211,7 @@ export default function CommunityPage() {
 
                   <div>
                     <label className="text-sm font-medium mb-2 block">Your Story</label>
-                    <Textarea 
+                    <Textarea
                       placeholder="Share your cancer journey and what you learned..."
                       className="min-h-[150px]"
                     />
@@ -209,7 +219,7 @@ export default function CommunityPage() {
 
                   <div>
                     <label className="text-sm font-medium mb-2 block">How You Can Help</label>
-                    <Textarea 
+                    <Textarea
                       placeholder="Describe how you'd like to support other patients..."
                       className="min-h-[100px]"
                     />
@@ -229,7 +239,7 @@ export default function CommunityPage() {
               <CardContent>
                 <ScrollArea className="h-[300px]">
                   <div className="space-y-4">
-                    {mentees?.map((mentee: any) => (
+                    {mentees?.map((mentee) => (
                       <Card key={mentee.id}>
                         <CardContent className="pt-6">
                           <div className="flex items-start gap-4">
