@@ -5,9 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
-import { MessageCircle, Users, UserPlus, Heart, Calendar } from "lucide-react";
+import { MessageCircle, Users, UserPlus, Heart, Calendar, Award } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface PatientProfile {
   id: number;
@@ -29,6 +30,7 @@ interface DiscussionTopic {
 }
 
 export default function CommunityPage() {
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("similar-patients");
 
   const { data: similarPatients } = useQuery<PatientProfile[]>({
@@ -37,6 +39,18 @@ export default function CommunityPage() {
 
   const { data: discussionTopics } = useQuery<DiscussionTopic[]>({
     queryKey: ['/api/community/discussions'],
+  });
+
+  const { data: mentorProfile } = useQuery({
+    queryKey: ['/api/mentor/profile'],
+  });
+
+  const { data: mentees } = useQuery({
+    queryKey: ['/api/mentor/mentees'],
+  });
+
+  const { data: requests } = useQuery({
+    queryKey: ['/api/mentor/requests'],
   });
 
   return (
@@ -49,7 +63,7 @@ export default function CommunityPage() {
       </div>
 
       <Tabs defaultValue="similar-patients" className="space-y-8">
-        <TabsList className="grid grid-cols-4 gap-4 bg-muted p-1 rounded-lg">
+        <TabsList className="grid grid-cols-5 gap-4 bg-muted p-1 rounded-lg">
           <TabsTrigger value="similar-patients" className="flex items-center gap-2">
             <Users className="h-4 w-4" />
             Similar Patients
@@ -57,6 +71,10 @@ export default function CommunityPage() {
           <TabsTrigger value="discussions" className="flex items-center gap-2">
             <MessageCircle className="h-4 w-4" />
             Discussions
+          </TabsTrigger>
+          <TabsTrigger value="mentor-others" className="flex items-center gap-2">
+            <Award className="h-4 w-4" />
+            Mentor Others
           </TabsTrigger>
           <TabsTrigger value="success-stories" className="flex items-center gap-2">
             <Heart className="h-4 w-4" />
@@ -157,6 +175,90 @@ export default function CommunityPage() {
               </ScrollArea>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="mentor-others">
+          <div className="grid gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Your Mentor Profile</CardTitle>
+                <CardDescription>
+                  Share your experience to help match you with patients who can benefit from your journey
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Areas of Expertise</label>
+                    <div className="flex flex-wrap gap-2">
+                      {["Breast Cancer", "Lung Cancer", "Chemotherapy", "Radiation", "Surgery", "Clinical Trials", "Lifestyle Changes", "Emotional Support"].map((tag) => (
+                        <Badge key={tag} variant="outline" className="cursor-pointer hover:bg-primary hover:text-primary-foreground">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Your Story</label>
+                    <Textarea 
+                      placeholder="Share your cancer journey and what you learned..."
+                      className="min-h-[150px]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">How You Can Help</label>
+                    <Textarea 
+                      placeholder="Describe how you'd like to support other patients..."
+                      className="min-h-[100px]"
+                    />
+                  </div>
+
+                  <Button className="w-full">Save Profile</Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Current Mentees Section */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Your Current Mentees</CardTitle>
+                <CardDescription>Patients you're currently mentoring</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ScrollArea className="h-[300px]">
+                  <div className="space-y-4">
+                    {mentees?.map((mentee: any) => (
+                      <Card key={mentee.id}>
+                        <CardContent className="pt-6">
+                          <div className="flex items-start gap-4">
+                            <Avatar className="h-12 w-12">
+                              <AvatarImage src={mentee.avatar} />
+                              <AvatarFallback>{mentee.name.slice(0, 2)}</AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1">
+                              <h3 className="font-semibold">{mentee.name}</h3>
+                              <p className="text-sm text-muted-foreground">
+                                {mentee.diagnosis} • Stage {mentee.stage}
+                              </p>
+                              <div className="flex gap-2 mt-2">
+                                <Button variant="outline" size="sm">Message</Button>
+                                <Button variant="outline" size="sm">Schedule Call</Button>
+                              </div>
+                            </div>
+                            <Badge variant="outline" className="mt-1">
+                              {mentee.status}
+                            </Badge>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </ScrollArea>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
 
         <TabsContent value="success-stories">

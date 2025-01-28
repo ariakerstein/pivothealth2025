@@ -10,7 +10,6 @@ const navItems = [
   { href: "/discover", label: "Discover" },
   { href: "/documents", label: "Documents" },
   { href: "/community", label: "Community" },
-  { href: "/mentor", label: "Mentor Others" },
 ];
 
 export default function Navbar() {
