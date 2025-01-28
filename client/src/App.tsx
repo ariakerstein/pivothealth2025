@@ -11,6 +11,7 @@ import Documents from "@/pages/documents";
 import Dashboard from "@/pages/dashboard";
 import LandingPage from "@/pages/landing";
 import AuthPage from "@/pages/auth-page";
+import Community from "@/pages/community";
 import { useUser } from "@/hooks/use-user";
 import { Loader2 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
@@ -67,6 +68,7 @@ function Router() {
         <Route path="/recommendations" component={() => <ProtectedRoute component={Recommendations} />} />
         <Route path="/discover" component={() => <ProtectedRoute component={Tests} />} />
         <Route path="/documents" component={() => <ProtectedRoute component={Documents} />} />
+        <Route path="/community" component={() => <ProtectedRoute component={Community} />} />
         <Route component={NotFound} />
       </Switch>
     </div>

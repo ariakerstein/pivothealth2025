@@ -9,6 +9,7 @@ const navItems = [
   { href: "/recommendations", label: "Recommendations" },
   { href: "/discover", label: "Discover" },
   { href: "/documents", label: "Documents" },
+  { href: "/community", label: "Community" },
 ];
 
 export default function Navbar() {
