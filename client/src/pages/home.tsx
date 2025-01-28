@@ -1,15 +1,25 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import OnboardingForm from "@/components/onboarding/OnboardingForm";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
+import { useQuery } from "@tanstack/react-query";
+import { Upload, FileText, Heart } from "lucide-react";
 
 export default function Home() {
   const { toast } = useToast();
 
+  const { data: recommendations } = useQuery<any[]>({
+    queryKey: ['/api/recommendations/active'],
+  });
+
+  const { data: documents } = useQuery<any[]>({
+    queryKey: ['/api/documents'],
+  });
+
   return (
-    <div className="space-y-8">
-      <section className="text-center space-y-4">
+    <div className="container mx-auto py-8 px-4">
+      <section className="text-center space-y-4 mb-12">
         <h1 className="text-4xl font-bold tracking-tight">
           Welcome to{" "}
           <span className="bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
@@ -17,63 +27,102 @@ export default function Home() {
           </span>
         </h1>
         <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-          Your personalized healthcare journey starts here. Let's begin by understanding your health needs.
+          Your personalized healthcare journey starts here. Let's work together to provide you with the best possible care.
         </p>
       </section>
 
-      <div className="grid md:grid-cols-2 gap-8">
-        <Card>
+      <div className="grid lg:grid-cols-2 gap-8">
+        <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Patient Onboarding</CardTitle>
+            <CardTitle>Patient Information</CardTitle>
+            <CardDescription>
+              Help us understand your health needs better by providing some basic information.
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <OnboardingForm onComplete={() => {
               toast({
-                title: "Onboarding Complete",
+                title: "Profile Updated",
                 description: "Your health profile has been saved successfully."
               });
             }} />
           </CardContent>
         </Card>
 
-        <div className="space-y-4">
-          <Card className="p-6">
-            <div className="flex items-center justify-center mb-4">
-              <svg
-                width="64"
-                height="64"
-                viewBox="0 0 32 32"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="text-blue-500"
-              >
-                <path
-                  d="M16 2C8.268 2 2 8.268 2 16s6.268 14 14 14 14-6.268 14-14S23.732 2 16 2z"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                />
-                <path
-                  d="M16 8v16M8 16h16"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                />
-              </svg>
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Upload className="h-5 w-5" />
+              Document Management
+            </CardTitle>
+            <CardDescription>
+              Securely upload and manage your medical documents
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="bg-muted rounded-lg p-4">
+              <p className="text-sm text-muted-foreground mb-2">
+                Recent Documents ({documents?.length || 0})
+              </p>
+              {documents && documents.length > 0 ? (
+                <ul className="space-y-2">
+                  {documents.slice(0, 3).map((doc: any) => (
+                    <li key={doc.id} className="flex items-center gap-2">
+                      <FileText className="h-4 w-4" />
+                      <span className="text-sm truncate">{doc.filename}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm text-muted-foreground italic">
+                  No documents uploaded yet
+                </p>
+              )}
             </div>
-            <p className="text-center text-muted-foreground">
-              Pivot Health provides you with personalized healthcare support, AI-powered assistance, and easy access to diagnostic services.
-            </p>
-          </Card>
+            <Link href="/documents">
+              <Button className="w-full">
+                Manage Documents
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
 
-          <div className="grid grid-cols-2 gap-4">
-            <Link href="/chat">
-              <Button className="w-full" variant="outline">Chat with AI</Button>
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Heart className="h-5 w-5" />
+              Care Recommendations
+            </CardTitle>
+            <CardDescription>
+              Personalized recommendations based on your profile
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="bg-muted rounded-lg p-4">
+              <p className="text-sm text-muted-foreground mb-2">
+                Active Recommendations ({recommendations?.length || 0})
+              </p>
+              {recommendations && recommendations.length > 0 ? (
+                <ul className="space-y-2">
+                  {recommendations.slice(0, 3).map((rec: any) => (
+                    <li key={rec.id} className="text-sm">
+                      • {rec.title}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm text-muted-foreground italic">
+                  Complete your profile to receive personalized recommendations
+                </p>
+              )}
+            </div>
+            <Link href="/recommendations">
+              <Button className="w-full" variant="outline">
+                View All Recommendations
+              </Button>
             </Link>
-            <Link href="/tests">
-              <Button className="w-full">Order Tests</Button>
-            </Link>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
