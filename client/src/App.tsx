@@ -51,7 +51,7 @@ function Router() {
         <Route path="/dashboard" component={() => <ProtectedRoute component={Dashboard} />} />
         <Route path="/chat" component={() => <ProtectedRoute component={Chat} />} />
         <Route path="/recommendations" component={() => <ProtectedRoute component={Recommendations} />} />
-        <Route path="/tests" component={() => <ProtectedRoute component={Tests} />} />
+        <Route path="/discover" component={() => <ProtectedRoute component={Tests} />} />
         <Route path="/documents" component={() => <ProtectedRoute component={Documents} />} />
         <Route component={NotFound} />
       </Switch>
