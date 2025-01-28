@@ -26,6 +26,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useMutation } from "@tanstack/react-query";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Progress } from "@/components/ui/progress";
+import SchedulingModal from "@/components/scheduling/SchedulingModal";
 
 const formSchema = z.object({
   // Demographics
@@ -119,6 +120,7 @@ const FORM_STEPS = [
 
 export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
   const [step, setStep] = useState(0);
+  const [showScheduling, setShowScheduling] = useState(false);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -168,7 +170,10 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       }).then((res) => res.json()),
-    onSuccess: onComplete,
+    onSuccess: () => {
+      setShowScheduling(true);
+      onComplete();
+    },
   });
 
   const currentStep = FORM_STEPS[step];
@@ -926,6 +931,11 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
           </div>
         </form>
       </Form>
+
+      <SchedulingModal 
+        open={showScheduling} 
+        onOpenChange={setShowScheduling}
+      />
     </div>
   );
 }
