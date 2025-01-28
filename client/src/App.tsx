@@ -1,4 +1,4 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -17,6 +17,7 @@ import Navbar from "@/components/layout/Navbar";
 
 function ProtectedRoute({ component: Component, ...rest }: { component: React.ComponentType }) {
   const { user, isLoading } = useUser();
+  const [, setLocation] = useLocation();
 
   if (isLoading) {
     return (
@@ -27,7 +28,7 @@ function ProtectedRoute({ component: Component, ...rest }: { component: React.Co
   }
 
   if (!user) {
-    window.location.href = '/auth';
+    setLocation('/auth');
     return null;
   }
 
@@ -40,10 +41,22 @@ function ProtectedRoute({ component: Component, ...rest }: { component: React.Co
 }
 
 function Router() {
+  const { user, isLoading } = useUser();
+
+  // Show loading spinner while checking auth status
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <Switch>
-        <Route path="/" component={LandingPage} />
+        {/* Public routes */}
+        <Route path="/" component={user ? Dashboard : LandingPage} />
         <Route path="/auth" component={AuthPage} />
 
         {/* Protected routes */}
