@@ -49,7 +49,7 @@ export default function DiscoverPage() {
   });
 
   const orderMutation = useMutation({
-    mutationFn: (serviceId: number) => 
+    mutationFn: (serviceId: number) =>
       fetch('/api/tests/order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -82,8 +82,8 @@ export default function DiscoverPage() {
   }
 
   const ServiceCard = ({ service }: { service: Service }) => (
-    <Card 
-      key={service.id} 
+    <Card
+      key={service.id}
       className="cursor-pointer hover:shadow-lg transition-shadow"
       onClick={() => setSelectedService(service)}
     >
@@ -212,7 +212,7 @@ export default function DiscoverPage() {
             <div className="flex justify-between items-center">
               <div>
                 <span className="font-semibold">
-                  Price: ${(selectedService?.price ?? 0 / 100).toFixed(2)}
+                  Price: ${((selectedService?.price ?? 0) / 100).toFixed(2)}
                 </span>
                 <span className="text-sm text-muted-foreground ml-2">
                   {selectedService?.insuranceCoverage ? '(Covered by Insurance)' : '(Self-Pay)'}
@@ -225,7 +225,7 @@ export default function DiscoverPage() {
             <Button variant="outline" onClick={() => setSelectedService(null)}>
               Cancel
             </Button>
-            <Button 
+            <Button
               onClick={() => selectedService && orderMutation.mutate(selectedService.id)}
               disabled={orderMutation.isPending}
             >
