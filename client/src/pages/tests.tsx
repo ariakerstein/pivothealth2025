@@ -150,7 +150,8 @@ export default function DiscoverPage() {
           )}
 
           {activeCategory === "all" && recommendedServices && recommendedServices.length > 0 && (
-            <div className="mb-12">
+            <div className="mb-12 relative">
+              <div className="absolute -left-4 -right-4 top-0 bottom-0 bg-gradient-to-b from-blue-50/50 to-transparent dark:from-blue-950/50 rounded-lg -z-10" />
               <div className="bg-blue-50 dark:bg-blue-950 p-4 rounded-lg mb-6">
                 <h3 className="text-lg font-semibold">Recommended for You</h3>
                 <p className="text-sm text-muted-foreground">
@@ -162,6 +163,8 @@ export default function DiscoverPage() {
                   <ServiceCard key={service.id} service={service} />
                 ))}
               </div>
+              <div className="border-b border-border/50 my-12" />
+              <div className="text-xl font-semibold mb-6">All Available Services</div>
             </div>
           )}
 
