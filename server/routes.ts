@@ -635,6 +635,129 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
+  // Community endpoints with sample data
+  app.get("/api/community/similar-patients", (_req, res) => {
+    const samplePatients = [
+      {
+        id: 1,
+        name: "Sarah M.",
+        cancerType: "Breast Cancer",
+        stage: "II",
+        treatmentPhase: "Post-Surgery Recovery",
+        interests: ["Nutrition", "Exercise", "Mindfulness"],
+        matchScore: 92
+      },
+      {
+        id: 2,
+        name: "James H.",
+        cancerType: "Lung Cancer",
+        stage: "I",
+        treatmentPhase: "Chemotherapy",
+        interests: ["Support Groups", "Clinical Trials", "Alternative Therapy"],
+        matchScore: 85
+      },
+      {
+        id: 3,
+        name: "Maria R.",
+        cancerType: "Breast Cancer",
+        stage: "III",
+        treatmentPhase: "Radiation Therapy",
+        interests: ["Lifestyle Changes", "Diet", "Meditation"],
+        matchScore: 78
+      }
+    ];
+    res.json(samplePatients);
+  });
+
+  app.get("/api/community/discussions", (_req, res) => {
+    const sampleDiscussions = [
+      {
+        id: 1,
+        title: "Tips for Managing Chemo Side Effects",
+        author: "Emily S.",
+        replies: 24,
+        lastActivity: "2 hours ago",
+        tags: ["Chemotherapy", "Side Effects", "Wellness"]
+      },
+      {
+        id: 2,
+        title: "Success Story: 5 Years Cancer-Free",
+        author: "Michael P.",
+        replies: 45,
+        lastActivity: "1 day ago",
+        tags: ["Success Story", "Inspiration", "Recovery"]
+      },
+      {
+        id: 3,
+        title: "New Clinical Trial Opportunities",
+        author: "Dr. Roberts",
+        replies: 18,
+        lastActivity: "3 hours ago",
+        tags: ["Clinical Trials", "Research", "Treatment Options"]
+      }
+    ];
+    res.json(sampleDiscussions);
+  });
+
+  app.get("/api/mentor/profile", (_req, res) => {
+    const sampleProfile = {
+      id: 1,
+      name: "David Wilson",
+      expertise: ["Breast Cancer", "Chemotherapy", "Emotional Support"],
+      story: "Survived stage II breast cancer, completed treatment in 2022",
+      yearsOfExperience: 2,
+      menteesCount: 5,
+      rating: 4.8
+    };
+    res.json(sampleProfile);
+  });
+
+  app.get("/api/mentor/mentees", (_req, res) => {
+    const sampleMentees = [
+      {
+        id: 1,
+        name: "Rachel K.",
+        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Rachel",
+        diagnosis: "Breast Cancer",
+        stage: "II",
+        status: "Active"
+      },
+      {
+        id: 2,
+        name: "Thomas B.",
+        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Thomas",
+        diagnosis: "Lung Cancer",
+        stage: "I",
+        status: "Weekly Check-in"
+      }
+    ];
+    res.json(sampleMentees);
+  });
+
+  app.get("/api/mentor/requests", (_req, res) => {
+    const sampleRequests = [
+      {
+        id: 1,
+        name: "Lisa M.",
+        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Lisa",
+        diagnosis: "Breast Cancer",
+        stage: "I",
+        message: "Looking for guidance on managing anxiety during treatment",
+        status: "Pending"
+      },
+      {
+        id: 2,
+        name: "John D.",
+        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=John",
+        diagnosis: "Prostate Cancer",
+        stage: "II",
+        message: "Need advice on treatment options and lifestyle changes",
+        status: "Pending"
+      }
+    ];
+    res.json(sampleRequests);
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
