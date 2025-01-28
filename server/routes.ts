@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { db } from "@db";
-import { patients, diagnosticTests, recommendations, testOrders, patientDocuments, riskAssessments, achievements, patientAchievements, patientStreak } from "@db/schema";
+import { patients, diagnosticTests, recommendations, testOrders, patientDocuments, riskAssessments, achievements, patientAchievements, patientStreak, users } from "@db/schema";
 import { eq, sql } from "drizzle-orm";
 import multer from "multer";
 import { encryptBuffer, decryptBuffer } from "./utils/encryption";
@@ -757,6 +757,32 @@ export function registerRoutes(app: Express): Server {
     ];
     res.json(sampleRequests);
   });
+
+  // Add avatar update endpoint
+  app.post("/api/user/avatar", async (req, res) => {
+    try {
+      if (!req.user?.id) {
+        return res.status(401).send("Not authenticated");
+      }
+
+      const { avatarUrl } = req.body;
+      if (!avatarUrl) {
+        return res.status(400).send("Avatar URL is required");
+      }
+
+      const [updatedUser] = await db
+        .update(users)
+        .set({ avatarUrl })
+        .where(eq(users.id, req.user.id))
+        .returning();
+
+      res.json(updatedUser);
+    } catch (error) {
+      console.error('Avatar update error:', error);
+      res.status(500).json({ error: "Failed to update avatar" });
+    }
+  });
+
 
   const httpServer = createServer(app);
   return httpServer;
