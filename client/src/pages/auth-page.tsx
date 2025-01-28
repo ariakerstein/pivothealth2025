@@ -15,11 +15,11 @@ export default function AuthPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       const authFn = mode === 'login' ? login : register;
       const result = await authFn({ username, password });
-      
+
       if (!result.ok) {
         toast({
           variant: "destructive",
@@ -29,7 +29,7 @@ export default function AuthPage() {
         return;
       }
 
-      setLocation('/dashboard');
+      setLocation('/home');
     } catch (error) {
       toast({
         variant: "destructive",

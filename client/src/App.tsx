@@ -42,6 +42,7 @@ function ProtectedRoute({ component: Component, ...rest }: { component: React.Co
 
 function Router() {
   const { user, isLoading } = useUser();
+  const [, setLocation] = useLocation();
 
   // Show loading spinner while checking auth status
   if (isLoading) {
@@ -56,7 +57,7 @@ function Router() {
     <div className="min-h-screen bg-background">
       <Switch>
         {/* Public routes */}
-        <Route path="/" component={user ? Dashboard : LandingPage} />
+        <Route path="/" component={user ? () => { setLocation('/home'); return null; } : LandingPage} />
         <Route path="/auth" component={AuthPage} />
 
         {/* Protected routes */}
