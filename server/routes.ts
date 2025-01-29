@@ -6,6 +6,7 @@ import { eq, sql } from "drizzle-orm";
 import multer from "multer";
 import { encryptBuffer, decryptBuffer } from "./utils/encryption";
 import { setupAuth } from "./auth";
+import OpenAI from "openai";
 
 // Configure multer for memory storage
 const upload = multer({ storage: multer.memoryStorage() });
@@ -60,50 +61,52 @@ export function registerRoutes(app: Express): Server {
 
 app.post("/api/chat", async (req, res) => {
     try {
-      const response = await fetch("https://api.perplexity.ai/chat/completions", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${process.env.PERPLEXITY_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "llama-3.1-sonar-small-128k-online",
-          messages: [
-            {
-              role: "system",
-              content: `You are an AI health assistant with expertise in oncology and patient support. Your role is to:
-              1. Provide evidence-based medical information
-              2. Explain complex medical terms in simple language
-              3. Offer emotional support and coping strategies
-              4. Share relevant lifestyle and wellness recommendations
+      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-              Important Guidelines:
-              - Always start responses with a clear medical disclaimer
-              - Cite medical guidelines when applicable
-              - Encourage consulting healthcare providers for specific medical advice
-              - Focus on validated medical information from reputable sources
-              - Be empathetic and supportive while maintaining professionalism
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+        messages: [
+          {
+            role: "system",
+            content: `You are an AI health assistant with expertise in oncology and patient support. Your role is to:
+            1. Provide evidence-based medical information
+            2. Explain complex medical terms in simple language
+            3. Offer emotional support and coping strategies
+            4. Share relevant lifestyle and wellness recommendations
 
-              Remember: You are not a replacement for professional medical advice, diagnosis, or treatment.`
-            },
-            ...req.body.messages
-          ],
-          temperature: 0.2,
-          max_tokens: 1000,
-        }),
+            Important Guidelines:
+            - Always start responses with a clear medical disclaimer
+            - Cite medical guidelines when applicable (e.g., NCCN Guidelines, ASCO recommendations)
+            - Encourage consulting healthcare providers for specific medical advice
+            - Focus on validated medical information from reputable sources
+            - Be empathetic and supportive while maintaining professionalism
+            - When discussing treatments, always refer to standard of care protocols
+            - For symptom management, provide general, safe recommendations
+
+            Remember: You are not a replacement for professional medical advice, diagnosis, or treatment.
+            Format all responses to include:
+            1. Medical disclaimer
+            2. Main response
+            3. References to medical guidelines if applicable
+            4. Recommendation to consult healthcare providers`
+          },
+          ...req.body.messages
+        ],
+        temperature: 0.1, // Lower temperature for more consistent medical advice
+        max_tokens: 1000,
+        top_p: 0.9,
+        frequency_penalty: 0.5, // Reduce repetition
       });
 
-      if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
+      if (!response.choices[0].message.content) {
+        throw new Error("No response from AI");
       }
 
-      const data = await response.json();
-
-      // Add disclaimer to response if not present
-      let messageContent = data.choices[0].message.content;
+      let messageContent = response.choices[0].message.content;
       const disclaimer = "Note: This AI assistant provides general information and support but is not a substitute for professional medical advice. Always consult with your healthcare provider for medical decisions.";
 
-      if (!messageContent.includes("not a substitute for professional medical advice")) {
+      // Ensure disclaimer is present
+      if (!messageContent.toLowerCase().includes("not a substitute for professional medical advice")) {
         messageContent = `${disclaimer}\n\n${messageContent}`;
       }
 
