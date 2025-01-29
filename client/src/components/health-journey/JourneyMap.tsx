@@ -70,19 +70,19 @@ export function JourneyMap() {
       <div className="min-w-[800px] relative">
         <svg
           width="100%"
-          height="200"
-          viewBox="0 0 800 200"
+          height="120"
+          viewBox="0 0 800 120"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
           {/* More interesting curved path with waves */}
           <path
-            d="M 50,100 
-               C 150,150 200,50 300,100 
-               S 450,150 550,100 
-               S 700,50 750,100"
+            d="M 50,60 
+               C 150,90 200,30 300,60 
+               S 450,90 550,60 
+               S 700,30 750,60"
             className="stroke-blue-200"
-            strokeWidth="40"
+            strokeWidth="30"
             strokeLinecap="round"
             fill="none"
           />
@@ -93,7 +93,7 @@ export function JourneyMap() {
             const progress = index / (stages.length - 1);
             const x = 50 + progress * 700;
             // Add vertical variation based on the progress
-            const y = 100 + Math.sin(progress * Math.PI * 2) * 30;
+            const y = 60 + Math.sin(progress * Math.PI * 2) * 20;
 
             return (
               <TooltipProvider key={stage.id}>
@@ -109,7 +109,7 @@ export function JourneyMap() {
                       <circle
                         cx={x}
                         cy={y}
-                        r="20"
+                        r="15"
                         className={cn(
                           stage.status === 'completed' ? 'fill-green-500' :
                           stage.status === 'current' ? 'fill-blue-500' :
@@ -123,7 +123,7 @@ export function JourneyMap() {
                         y={y}
                         textAnchor="middle"
                         dy=".3em"
-                        className="fill-white text-sm font-bold"
+                        className="fill-white text-xs font-bold"
                       >
                         {index + 1}
                       </text>
@@ -131,10 +131,10 @@ export function JourneyMap() {
                       {/* Stage title */}
                       <text
                         x={x}
-                        y={y + 35}
+                        y={y + 28}
                         textAnchor="middle"
                         className={cn(
-                          "fill-gray-700 text-xs font-medium",
+                          "fill-gray-700 text-[10px] font-medium",
                           hoveredStage === stage.id && "fill-blue-600 font-bold"
                         )}
                       >
