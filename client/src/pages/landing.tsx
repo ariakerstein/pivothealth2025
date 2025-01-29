@@ -155,7 +155,7 @@ export default function LandingPage() {
                 </div>
                 <h4 className="font-semibold text-xl">Precision Diagnostics</h4>
                 <p className="text-gray-400">
-                  Cutting edge diagnostics, labs and analysis, along with world leading experts to ensure your diagnosis is accurate, and that you're on the best treatment path.
+                  Cutting-edge diagnostics, labs and analysis, along with world-leading experts to ensure accurate diagnosis and optimal treatment path.
                 </p>
               </div>
               <div className="text-center space-y-4">
