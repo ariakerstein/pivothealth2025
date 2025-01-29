@@ -6,7 +6,6 @@ import { eq, sql } from "drizzle-orm";
 import multer from "multer";
 import { encryptBuffer, decryptBuffer } from "./utils/encryption";
 import { setupAuth } from "./auth";
-import OpenAI from "openai";
 
 // Configure multer for memory storage
 const upload = multer({ storage: multer.memoryStorage() });
@@ -68,56 +67,66 @@ export function registerRoutes(app: Express): Server {
 
   app.post("/api/chat", async (req, res) => {
     try {
-      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+      const { messages } = req.body;
 
-      const response = await openai.chat.completions.create({
-        model: "gpt-4", // Using GPT-4 for medical advice
-        messages: [
-          {
-            role: "system",
-            content: `You are an AI health assistant with expertise in oncology and patient support. Your role is to:
-            1. Provide evidence-based medical information
-            2. Explain complex medical terms in simple language
-            3. Offer emotional support and coping strategies
-            4. Share relevant lifestyle and wellness recommendations
+      // Create message array with medical context
+      const messageArray = [
+        {
+          role: "system",
+          content: `You are a knowledgeable medical AI assistant focused on cancer care. 
+          Provide accurate, evidence-based information while being empathetic. 
+          Always cite sources when possible. If unsure, acknowledge limitations and 
+          recommend consulting healthcare providers.
 
-            Important Guidelines:
-            - Always start responses with a clear medical disclaimer
-            - Cite medical guidelines when applicable (e.g., NCCN Guidelines, ASCO recommendations)
-            - Encourage consulting healthcare providers for specific medical advice
-            - Focus on validated medical information from reputable sources
-            - Be empathetic and supportive while maintaining professionalism
-            - When discussing treatments, always refer to standard of care protocols
-            - For symptom management, provide general, safe recommendations
+          Important Guidelines:
+          - Be clear about being an AI assistant
+          - Provide evidence-based information from reputable medical sources
+          - Show empathy while maintaining professionalism
+          - Encourage consultation with healthcare providers for specific medical advice
+          - Focus on general information and support
+          - When discussing treatments, reference standard protocols
+          - For symptom management, provide general, safe recommendations`
+        },
+        ...messages
+      ];
 
-            Remember: You are not a replacement for professional medical advice, diagnosis, or treatment.
-            Format all responses to include:
-            1. Medical disclaimer
-            2. Main response
-            3. References to medical guidelines if applicable
-            4. Recommendation to consult healthcare providers`
-          },
-          ...req.body.messages
-        ],
-        temperature: 0.1, // Lower temperature for more consistent medical advice
-        max_tokens: 1000,
-        top_p: 0.9,
-        frequency_penalty: 0.5, // Reduce repetition
+      // Send request to Perplexity API
+      const response = await fetch("https://api.perplexity.ai/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.PERPLEXITY_API_KEY}`,
+        },
+        body: JSON.stringify({
+          model: "llama-3.1-sonar-small-128k-online",
+          messages: messageArray,
+          temperature: 0.2,
+          max_tokens: 2048,
+          search_domain_filter: ["nih.gov", "cancer.gov", "who.int", "mayoclinic.org", "cancer.org"],
+          return_citations: true
+        })
       });
 
-      if (!response.choices[0].message.content) {
-        throw new Error("No response from AI");
+      if (!response.ok) {
+        throw new Error(`API request failed: ${response.statusText}`);
       }
 
-      let messageContent = response.choices[0].message.content;
+      const data = await response.json();
+
+      // Format response with citations
+      const messageContent = data.choices[0].message.content;
+      const citations = data.citations || [];
+
+      // Add medical disclaimer if not present
       const disclaimer = "Note: This AI assistant provides general information and support but is not a substitute for professional medical advice. Always consult with your healthcare provider for medical decisions.";
+      const finalMessage = messageContent.toLowerCase().includes("not a substitute") 
+        ? messageContent 
+        : `${disclaimer}\n\n${messageContent}`;
 
-      // Ensure disclaimer is present
-      if (!messageContent.toLowerCase().includes("not a substitute for professional medical advice")) {
-        messageContent = `${disclaimer}\n\n${messageContent}`;
-      }
-
-      res.json({ message: messageContent });
+      res.json({ 
+        message: finalMessage,
+        citations: citations
+      });
     } catch (error) {
       console.error('Chat API error:', error);
       res.status(500).json({

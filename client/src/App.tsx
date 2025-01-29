@@ -57,7 +57,7 @@ function Router() {
     <div className="min-h-screen bg-background">
       <Switch>
         {/* Public routes */}
-        <Route path="/" component={user ? Home : LandingPage} />
+        <Route path="/" component={user ? () => <ProtectedRoute component={Home} /> : LandingPage} />
         <Route path="/auth" component={user ? () => { window.location.href = '/'; return null; } : AuthPage} />
 
         {/* Protected routes */}
