@@ -69,9 +69,16 @@ export default function LandingPage() {
 
         <div className="py-24 lg:py-32 space-y-12">
           <div className="max-w-4xl mx-auto text-center space-y-6">
-            <h2 className="text-5xl lg:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-blue-600">
-              Your cancer co-pilot
-            </h2>
+            <div className="flex items-center justify-center gap-8 mb-8">
+              <img 
+                src="./attached_assets/Screenshot 2025-01-29 at 12.15.17 PM.png"
+                alt="Health Pulse Logo"
+                className="w-32 h-32 object-contain"
+              />
+              <h2 className="text-5xl lg:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-blue-600">
+                Your cancer co-pilot
+              </h2>
+            </div>
             <p className="text-xl lg:text-2xl text-gray-300 leading-relaxed">
               Personalized navigation, diagnostics & support for{" "}
               <span className="text-blue-400">your</span> cancer journey.
