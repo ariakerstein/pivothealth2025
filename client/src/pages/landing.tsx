@@ -155,7 +155,7 @@ export default function LandingPage() {
                 </div>
                 <h4 className="font-semibold text-xl">Precision Diagnostics</h4>
                 <p className="text-gray-400">
-                  Cutting-edge AI-powered analysis and diagnostic tools for early detection and monitoring of cancer progression.
+                  Cutting edge diagnostics, labs and analysis, along with world leading experts to ensure your diagnosis is accurate, and that you're on the best treatment path.
                 </p>
               </div>
               <div className="text-center space-y-4">
@@ -164,7 +164,7 @@ export default function LandingPage() {
                 </div>
                 <h4 className="font-semibold text-xl">Community Support</h4>
                 <p className="text-gray-400">
-                  Connect with mentors and peers who understand your journey.
+                  Connect with mentors, experts, and peers who understand your journey and can provide valuable guidance and support.
                 </p>
               </div>
             </div>
