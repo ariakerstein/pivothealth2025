@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { db } from "@db";
-import { patients, diagnosticTests, recommendations, testOrders, patientDocuments, riskAssessments, achievements, patientAchievements, patientStreak, users } from "@db/schema";
+import { patients, diagnosticTests, recommendations, testOrders, patientDocuments, riskAssessments, achievements, patientAchievements, patientStreak, users, waitlist, insertWaitlistSchema } from "@db/schema";
 import { eq, sql } from "drizzle-orm";
 import multer from "multer";
 import { encryptBuffer, decryptBuffer } from "./utils/encryption";
@@ -15,16 +15,33 @@ export function registerRoutes(app: Express): Server {
   // Add waitlist endpoint
   app.post("/api/waitlist", async (req, res) => {
     try {
-      const { email } = req.body;
-
-      if (!email || !email.includes('@')) {
-        return res.status(400).json({ error: "Invalid email address" });
+      const result = insertWaitlistSchema.safeParse(req.body);
+      if (!result.success) {
+        return res.status(400).json({ 
+          error: "Invalid email address: " + result.error.issues.map(i => i.message).join(", ") 
+        });
       }
 
-      // Here you would typically save the email to your database
-      // For now, we'll just simulate success
-      console.log('Waitlist signup:', email);
+      const { email } = result.data;
 
+      // Check if email already exists
+      const [existingEmail] = await db
+        .select()
+        .from(waitlist)
+        .where(eq(waitlist.email, email))
+        .limit(1);
+
+      if (existingEmail) {
+        return res.status(400).json({ error: "Email already registered" });
+      }
+
+      // Store email in database
+      const [newEntry] = await db
+        .insert(waitlist)
+        .values({ email })
+        .returning();
+
+      console.log('Waitlist signup:', email);
       res.json({ status: "success", message: "Added to waitlist" });
     } catch (error) {
       console.error('Waitlist error:', error);
