@@ -18,6 +18,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import AchievementCard from "@/components/achievements/AchievementCard";
+import { JourneyMap } from "@/components/health-journey/JourneyMap";
 
 interface Recommendation {
   id: number;
@@ -200,6 +201,12 @@ export default function Recommendations() {
             </div>
           ) : null}
         </div>
+
+        {/* Add Journey Map */}
+        <div className="mb-8">
+          <JourneyMap />
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {achievements?.slice(0, 3).map((achievement) => (
             <AchievementCard
