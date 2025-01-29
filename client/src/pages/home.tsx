@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Upload, FileText, Heart } from "lucide-react";
+import { JourneyMap } from "@/components/health-journey/JourneyMap";
 
 export default function Home() {
   const { toast } = useToast();
@@ -19,6 +20,12 @@ export default function Home() {
 
   return (
     <div className="container mx-auto py-8 px-4">
+      {/* Journey Map */}
+      <section className="mb-12 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 rounded-lg p-6">
+        <h2 className="text-2xl font-bold tracking-tight mb-6">Your Health Journey</h2>
+        <JourneyMap />
+      </section>
+
       <section className="text-center space-y-4 mb-12">
         <h1 className="text-4xl font-bold tracking-tight">
           Welcome to{" "}

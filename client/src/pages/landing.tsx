@@ -6,7 +6,6 @@ import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { Loader2, Rocket, Shield, Heart } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
-import { JourneyMap } from "@/components/health-journey/JourneyMap";
 
 export default function LandingPage() {
   const [, setLocation] = useLocation();
@@ -68,7 +67,7 @@ export default function LandingPage() {
           </div>
         </nav>
 
-        <div className="py-12 lg:py-16 space-y-12">
+        <div className="py-24 lg:py-32 space-y-12">
           <div className="max-w-4xl mx-auto text-center space-y-6">
             <h2 className="text-5xl lg:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-blue-600">
               Your cancer co-pilot
@@ -77,12 +76,6 @@ export default function LandingPage() {
               Personalized navigation, diagnostics & support for{" "}
               <span className="text-blue-400">your</span> cancer journey.
             </p>
-          </div>
-
-          {/* Add Journey Map */}
-          <div className="max-w-5xl mx-auto bg-white/5 rounded-lg backdrop-blur-sm p-6">
-            <h3 className="text-2xl font-semibold text-center mb-6">Your Journey Map</h3>
-            <JourneyMap />
           </div>
 
           <form onSubmit={handleSubmit} className="max-w-md mx-auto space-y-4">
