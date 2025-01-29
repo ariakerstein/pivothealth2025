@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
+import { Loader2, Rocket, Shield, Heart, Sparkles } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
 import { QuestionsCarousel } from "@/components/ui/questions-carousel";
 
@@ -112,6 +112,50 @@ export default function LandingPage() {
           {/* Questions Carousel */}
           <div className="max-w-4xl mx-auto">
             <QuestionsCarousel />
+          </div>
+
+          <div className="max-w-6xl mx-auto">
+            <h3 className="text-2xl font-semibold text-center mb-12">
+              How It Works
+            </h3>
+            <div className="grid md:grid-cols-4 gap-8">
+              <div className="text-center space-y-4">
+                <div className="bg-blue-600/20 w-12 h-12 rounded-full flex items-center justify-center mx-auto">
+                  <Rocket className="h-6 w-6 text-blue-400" />
+                </div>
+                <h4 className="font-semibold text-xl">Smart Navigation</h4>
+                <p className="text-gray-400">
+                  AI-powered guidance through your treatment journey, helping you make informed decisions.
+                </p>
+              </div>
+              <div className="text-center space-y-4">
+                <div className="bg-blue-600/20 w-12 h-12 rounded-full flex items-center justify-center mx-auto">
+                  <Shield className="h-6 w-6 text-blue-400" />
+                </div>
+                <h4 className="font-semibold text-xl">Precision Diagnostics</h4>
+                <p className="text-gray-400">
+                  Cutting edge diagnostics and world class experts ensure your diagnosis is accurate and complete.
+                </p>
+              </div>
+              <div className="text-center space-y-4">
+                <div className="bg-blue-600/20 w-12 h-12 rounded-full flex items-center justify-center mx-auto">
+                  <Heart className="h-6 w-6 text-blue-400" />
+                </div>
+                <h4 className="font-semibold text-xl">Community Support</h4>
+                <p className="text-gray-400">
+                  Connect with mentors, experts, and peers who understand your journey and can provide valuable guidance.
+                </p>
+              </div>
+              <div className="text-center space-y-4">
+                <div className="bg-blue-600/20 w-12 h-12 rounded-full flex items-center justify-center mx-auto">
+                  <Sparkles className="h-6 w-6 text-blue-400" />
+                </div>
+                <h4 className="font-semibold text-xl">Care Resources</h4>
+                <p className="text-gray-400">
+                  Discover products & services to support your care journey, carefully curated for your specific needs.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
