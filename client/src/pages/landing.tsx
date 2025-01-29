@@ -7,13 +7,6 @@ import { useMutation } from "@tanstack/react-query";
 import { Loader2, Rocket, Shield, Heart } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
 
-// Import partner logos from the public URL path
-import cancerPatientLabLogo from "/assets/7e0cbf80.jpg";
-import cancerCommonsLogo from "/assets/05ccbf77.jpg";
-import proteanMapsLogo from "/assets/c5cddafb.jpg";
-import sageMedicLogo from "/assets/b9941746.jpg";
-import awareFoundationLogo from "/assets/63945aab.jpg";
-
 export default function LandingPage() {
   const [, setLocation] = useLocation();
   const [email, setEmail] = useState("");
@@ -161,35 +154,35 @@ export default function LandingPage() {
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 items-center justify-items-center">
               <div className="w-40 h-20 flex items-center justify-center">
                 <img
-                  src="/assets/7e0cbf80.jpg"
+                  src="client/public/assets/7e0cbf80.jpg"
                   alt="Cancer Patient Lab"
                   className="max-w-full max-h-full object-contain filter brightness-0 invert opacity-70 hover:opacity-100 transition-opacity"
                 />
               </div>
               <div className="w-40 h-20 flex items-center justify-center">
                 <img
-                  src="/assets/05ccbf77.jpg"
+                  src="client/public/assets/05ccbf77.jpg"
                   alt="Cancer Commons"
                   className="max-w-full max-h-full object-contain filter brightness-0 invert opacity-70 hover:opacity-100 transition-opacity"
                 />
               </div>
               <div className="w-40 h-20 flex items-center justify-center">
                 <img
-                  src="/assets/c5cddafb.jpg"
+                  src="client/public/assets/c5cddafb.jpg"
                   alt="Protean Maps"
                   className="max-w-full max-h-full object-contain filter brightness-0 invert opacity-70 hover:opacity-100 transition-opacity"
                 />
               </div>
               <div className="w-40 h-20 flex items-center justify-center">
                 <img
-                  src="/assets/b9941746.jpg"
+                  src="client/public/assets/b9941746.jpg"
                   alt="SageMedic"
                   className="max-w-full max-h-full object-contain filter brightness-0 invert opacity-70 hover:opacity-100 transition-opacity"
                 />
               </div>
               <div className="w-40 h-20 flex items-center justify-center">
                 <img
-                  src="/assets/63945aab.jpg"
+                  src="client/public/assets/63945aab.jpg"
                   alt="Aware Foundation"
                   className="max-w-full max-h-full object-contain filter brightness-0 invert opacity-70 hover:opacity-100 transition-opacity"
                 />
