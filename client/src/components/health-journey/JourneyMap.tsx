@@ -18,8 +18,8 @@ export type JourneyStage = {
 
 const stages: JourneyStage[] = [
   {
-    id: 'diagnosis',
-    title: 'Diagnosis',
+    id: 'diagnose',
+    title: 'Diagnose',
     description: 'Comprehensive evaluation and testing',
     status: 'current',
     link: '/tests'
