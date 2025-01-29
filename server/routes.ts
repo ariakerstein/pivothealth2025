@@ -58,7 +58,7 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
-  app.post("/api/chat", async (req, res) => {
+app.post("/api/chat", async (req, res) => {
     try {
       const response = await fetch("https://api.perplexity.ai/chat/completions", {
         method: "POST",
@@ -71,18 +71,49 @@ export function registerRoutes(app: Express): Server {
           messages: [
             {
               role: "system",
-              content: "You are a helpful medical AI assistant. Provide accurate, concise medical information while noting that you are not a replacement for professional medical advice."
+              content: `You are an AI health assistant with expertise in oncology and patient support. Your role is to:
+              1. Provide evidence-based medical information
+              2. Explain complex medical terms in simple language
+              3. Offer emotional support and coping strategies
+              4. Share relevant lifestyle and wellness recommendations
+
+              Important Guidelines:
+              - Always start responses with a clear medical disclaimer
+              - Cite medical guidelines when applicable
+              - Encourage consulting healthcare providers for specific medical advice
+              - Focus on validated medical information from reputable sources
+              - Be empathetic and supportive while maintaining professionalism
+
+              Remember: You are not a replacement for professional medical advice, diagnosis, or treatment.`
             },
             ...req.body.messages
           ],
           temperature: 0.2,
+          max_tokens: 1000,
         }),
       });
 
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
+
       const data = await response.json();
-      res.json({ message: data.choices[0].message.content });
+
+      // Add disclaimer to response if not present
+      let messageContent = data.choices[0].message.content;
+      const disclaimer = "Note: This AI assistant provides general information and support but is not a substitute for professional medical advice. Always consult with your healthcare provider for medical decisions.";
+
+      if (!messageContent.includes("not a substitute for professional medical advice")) {
+        messageContent = `${disclaimer}\n\n${messageContent}`;
+      }
+
+      res.json({ message: messageContent });
     } catch (error) {
-      res.status(500).json({ error: "Failed to process chat message" });
+      console.error('Chat API error:', error);
+      res.status(500).json({ 
+        error: "Failed to process chat message",
+        message: "Our health assistant is temporarily unavailable. Please try again later."
+      });
     }
   });
 
