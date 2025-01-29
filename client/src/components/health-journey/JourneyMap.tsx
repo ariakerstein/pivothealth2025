@@ -66,22 +66,21 @@ export function JourneyMap() {
   const [, navigate] = useLocation();
 
   return (
-    <div className="w-full overflow-x-auto p-8">
+    <div className="w-full overflow-x-auto">
       <div className="min-w-[800px] relative">
         <svg
           width="100%"
-          height="300"
-          viewBox="0 0 800 300"
+          height="200"
+          viewBox="0 0 800 200"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className="transform scale-100 transition-transform duration-300"
         >
-          {/* More curved winding path */}
+          {/* More interesting curved path with waves */}
           <path
-            d="M 50,150 
-               C 150,50 250,250 350,150 
-               S 550,50 650,150 
-               S 750,250 750,150"
+            d="M 50,100 
+               C 150,150 200,50 300,100 
+               S 450,150 550,100 
+               S 700,50 750,100"
             className="stroke-blue-200"
             strokeWidth="40"
             strokeLinecap="round"
@@ -93,14 +92,15 @@ export function JourneyMap() {
             // Calculate position along the curved path
             const progress = index / (stages.length - 1);
             const x = 50 + progress * 700;
-            const y = 150 + Math.sin(progress * Math.PI * 2) * 50;
+            // Add vertical variation based on the progress
+            const y = 100 + Math.sin(progress * Math.PI * 2) * 30;
 
             return (
               <TooltipProvider key={stage.id}>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <g
-                      className="cursor-pointer transform transition-transform duration-200 hover:scale-110"
+                      className="cursor-pointer"
                       onMouseEnter={() => setHoveredStage(stage.id)}
                       onMouseLeave={() => setHoveredStage(null)}
                       onClick={() => navigate(stage.link)}
@@ -111,7 +111,6 @@ export function JourneyMap() {
                         cy={y}
                         r="20"
                         className={cn(
-                          "transition-colors duration-200",
                           stage.status === 'completed' ? 'fill-green-500' :
                           stage.status === 'current' ? 'fill-blue-500' :
                           'fill-gray-300'
