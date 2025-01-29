@@ -153,9 +153,9 @@ export default function LandingPage() {
                 <div className="bg-blue-600/20 w-12 h-12 rounded-full flex items-center justify-center mx-auto">
                   <Shield className="h-6 w-6 text-blue-400" />
                 </div>
-                <h4 className="font-semibold text-xl">Secure Integration</h4>
+                <h4 className="font-semibold text-xl">Precision Diagnostics</h4>
                 <p className="text-gray-400">
-                  Seamlessly connect with your healthcare providers and medical records.
+                  Cutting-edge AI-powered analysis and diagnostic tools for early detection and monitoring of cancer progression.
                 </p>
               </div>
               <div className="text-center space-y-4">
