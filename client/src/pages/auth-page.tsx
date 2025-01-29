@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useUser } from "@/hooks/use-user";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
+import { Logo } from "@/components/ui/logo";
 
 export default function AuthPage() {
   const [mode, setMode] = useState<'login' | 'signup'>('login');
@@ -43,6 +44,9 @@ export default function AuthPage() {
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
+          <div className="flex items-center justify-center mb-4">
+            <Logo className="w-16 h-16" />
+          </div>
           <h1 className="text-2xl font-bold text-white">Pivot Health</h1>
           <h2 className="text-xl mt-2 text-gray-300">{mode === 'login' ? 'Welcome back' : 'Create your account'}</h2>
         </div>
