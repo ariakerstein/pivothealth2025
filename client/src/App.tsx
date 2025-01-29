@@ -44,7 +44,6 @@ function ProtectedRoute({ component: Component, ...rest }: { component: React.Co
 
 function Router() {
   const { user, isLoading } = useUser();
-  const [, setLocation] = useLocation();
 
   if (isLoading) {
     return (
@@ -58,8 +57,8 @@ function Router() {
     <div className="min-h-screen bg-background">
       <Switch>
         {/* Public routes */}
-        <Route path="/" component={user ? () => { setLocation('/home'); return null; } : LandingPage} />
-        <Route path="/auth" component={AuthPage} />
+        <Route path="/" component={user ? Home : LandingPage} />
+        <Route path="/auth" component={user ? () => { window.location.href = '/'; return null; } : AuthPage} />
 
         {/* Protected routes */}
         <Route path="/home" component={() => <ProtectedRoute component={Home} />} />
