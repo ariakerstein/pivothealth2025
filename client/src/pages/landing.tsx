@@ -109,7 +109,6 @@ export default function LandingPage() {
             </p>
           </form>
 
-          {/* Questions Carousel */}
           <div className="max-w-4xl mx-auto">
             <QuestionsCarousel />
           </div>
@@ -155,6 +154,25 @@ export default function LandingPage() {
             </div>
           </div>
         </div>
+
+        {/* Footer */}
+        <footer className="py-8 border-t border-white/10">
+          <div className="max-w-6xl mx-auto text-center space-y-4">
+            <p className="text-sm text-gray-400">
+              © {new Date().getFullYear()} Pivot Health. All rights reserved.
+            </p>
+            <p className="text-xs text-gray-500">
+              The information provided on this website is for general informational purposes only. 
+              It is not intended as and should not be relied upon as medical advice. 
+              Always consult with a qualified healthcare provider about your specific circumstances.
+            </p>
+            <div className="flex justify-center gap-6 text-sm text-gray-400">
+              <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
+              <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
+              <a href="#" className="hover:text-white transition-colors">Contact Us</a>
+            </div>
+          </div>
+        </footer>
       </div>
     </div>
   );
