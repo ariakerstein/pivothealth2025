@@ -81,13 +81,13 @@ export function registerRoutes(app: Express): Server {
       const messageArray = [
         {
           role: "system",
-          content: `You are a knowledgeable medical AI assistant focused on cancer care. 
+          content: `You are a knowledgeable medical Co-Pilot assistant focused on cancer care. 
           Provide accurate, evidence-based information while being empathetic. 
           Always cite sources when possible. If unsure, acknowledge limitations and 
           recommend consulting healthcare providers.
 
           Important Guidelines:
-          - Be clear about being an AI assistant
+          - Be clear about being an AI Co-Pilot
           - Provide evidence-based information from reputable medical sources
           - Show empathy while maintaining professionalism
           - Encourage consultation with healthcare providers for specific medical advice
@@ -115,22 +115,23 @@ export function registerRoutes(app: Express): Server {
         })
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
-        console.error('Perplexity API error:', data);
-        throw new Error(`API request failed: ${data.error || response.statusText}`);
+        const errorData = await response.json().catch(() => ({ error: response.statusText }));
+        console.error('Perplexity API error:', errorData);
+        throw new Error(errorData.error || response.statusText);
       }
+
+      const data = await response.json();
 
       // Format response with citations
       const messageContent = data.choices[0].message.content;
       const citations = data.citations || [];
 
       // Add medical disclaimer if not present
-      const disclaimer = "Note: This AI assistant provides general information and support but is not a substitute for professional medical advice. Always consult with your healthcare provider for medical decisions.";
-      const finalMessage = messageContent.toLowerCase().includes("not a substitute") 
+      const disclaimer = "Note: This AI Co-Pilot provides general information and support but is not a substitute for professional medical advice. Always consult with your healthcare provider for medical decisions.";
+      const finalMessage = messageContent.includes("not a substitute") 
         ? messageContent 
-        : `${disclaimer}\n\n${messageContent}`;
+        : `${messageContent}\n\n${disclaimer}`;
 
       res.json({ 
         message: finalMessage,
@@ -140,7 +141,7 @@ export function registerRoutes(app: Express): Server {
       console.error('Chat API error:', error);
       res.status(500).json({
         error: "Failed to process chat message",
-        message: "Our health assistant is temporarily unavailable. Please try again later."
+        message: "Our health Co-Pilot is temporarily unavailable. Please try again later."
       });
     }
   });

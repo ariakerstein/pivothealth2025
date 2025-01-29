@@ -16,7 +16,7 @@ interface Message {
 
 const initialMessage: Message = {
   role: "assistant",
-  content: `Welcome to your medical AI assistant. While I'm not a doctor, I'm here to help you navigate your cancer care journey with evidence-based information and support.
+  content: `Welcome to your medical Co-Pilot. I'm here to help you navigate your cancer care journey with evidence-based information and support.
 
 Here are some examples of questions you can ask:
 
@@ -35,7 +35,7 @@ Here are some examples of questions you can ask:
 - How can I maintain physical activity during treatment?
 - What stress management techniques work well for cancer patients?
 
-Remember: I'm here to provide information and support, but always consult your healthcare team for medical decisions.
+Remember: I'm your Co-Pilot in this journey, providing information and support, but always consult your healthcare team for medical decisions.
 
 How can I assist you today?`
 };
@@ -77,9 +77,9 @@ export default function Chat() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            AI Health Assistant
+            Health Co-Pilot
             <span className="text-sm font-normal text-muted-foreground">
-              (Non-Medical Advice)
+              (Evidence-Based Support)
             </span>
           </CardTitle>
         </CardHeader>
@@ -87,7 +87,7 @@ export default function Chat() {
           <Alert className="mb-4 bg-blue-50 dark:bg-blue-950">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
-              This AI assistant provides general information and support. Always consult healthcare professionals for medical advice.
+              Your Co-Pilot provides evidence-based information and support. Always consult healthcare professionals for medical advice.
             </AlertDescription>
           </Alert>
 

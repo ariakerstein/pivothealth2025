@@ -17,7 +17,7 @@ import { useUser } from "@/hooks/use-user";
 const navItems = [
   { href: "/", label: "Home" },
   { href: "/dashboard", label: "Dashboard" },
-  { href: "/chat", label: "AI Chat" },
+  { href: "/chat", label: "Co-Pilot" },
   { href: "/recommendations", label: "Recommendations" },
   { href: "/discover", label: "Discover" },
   { href: "/documents", label: "Documents" },
