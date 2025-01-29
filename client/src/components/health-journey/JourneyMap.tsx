@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { 
   Tooltip,
@@ -77,12 +77,12 @@ export function JourneyMap() {
             strokeLinecap="round"
             fill="none"
           />
-          
+
           {/* Stages positioned along the path */}
           {stages.map((stage, index) => {
             const x = 50 + (700 * index) / (stages.length - 1);
             const y = 200 + Math.sin((index * Math.PI) / 2) * 100;
-            
+
             return (
               <TooltipProvider key={stage.id}>
                 <Tooltip>
@@ -104,7 +104,7 @@ export function JourneyMap() {
                           'fill-gray-300'
                         )}
                       />
-                      
+
                       {/* Stage number */}
                       <text
                         x={x}
@@ -115,7 +115,7 @@ export function JourneyMap() {
                       >
                         {index + 1}
                       </text>
-                      
+
                       {/* Stage title */}
                       <text
                         x={x}
