@@ -71,7 +71,7 @@ export default function LandingPage() {
           <div className="max-w-4xl mx-auto text-center space-y-6">
             <div className="flex items-center justify-center gap-8 mb-8">
               <img 
-                src="./attached_assets/Screenshot 2025-01-29 at 12.15.17 PM.png"
+                src="/attached_assets/Screenshot 2025-01-29 at 12.15.17 PM.png"
                 alt="Health Pulse Logo"
                 className="w-32 h-32 object-contain"
               />
