@@ -68,7 +68,11 @@ function Router() {
         <Route path="/discover" component={() => <ProtectedRoute component={Tests} />} />
         <Route path="/documents" component={() => <ProtectedRoute component={Documents} />} />
         <Route path="/community" component={() => <ProtectedRoute component={Community} />} />
-        <Route path="/mentor" component={() => <ProtectedRoute component={Mentor} />} />
+        <Route path="/community/patients" component={() => <ProtectedRoute component={Community} />} />
+        <Route path="/community/topics" component={() => <ProtectedRoute component={Community} />} />
+        <Route path="/community/mentor" component={() => <ProtectedRoute component={Mentor} />} />
+        <Route path="/community/success-stories" component={() => <ProtectedRoute component={Community} />} />
+        <Route path="/community/groups" component={() => <ProtectedRoute component={Community} />} />
         <Route component={NotFound} />
       </Switch>
     </div>

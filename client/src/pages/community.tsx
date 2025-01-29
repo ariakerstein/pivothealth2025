@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,7 +42,46 @@ interface Mentee {
 
 export default function CommunityPage() {
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState("similar-patients");
+  const [location, setLocation] = useLocation();
+
+  // Determine active tab based on current route
+  const getActiveTab = () => {
+    switch (location) {
+      case "/community/patients":
+        return "similar-patients";
+      case "/community/topics":
+        return "discussions";
+      case "/community/mentor":
+        return "mentor-others";
+      case "/community/success-stories":
+        return "success-stories";
+      case "/community/groups":
+        return "support-groups";
+      default:
+        return "similar-patients";
+    }
+  };
+
+  // Handle tab changes by updating the URL
+  const handleTabChange = (value: string) => {
+    switch (value) {
+      case "similar-patients":
+        setLocation("/community/patients");
+        break;
+      case "discussions":
+        setLocation("/community/topics");
+        break;
+      case "mentor-others":
+        setLocation("/community/mentor");
+        break;
+      case "success-stories":
+        setLocation("/community/success-stories");
+        break;
+      case "support-groups":
+        setLocation("/community/groups");
+        break;
+    }
+  };
 
   const { data: similarPatients = [] } = useQuery<PatientProfile[]>({
     queryKey: ['/api/community/similar-patients'],
@@ -64,51 +104,54 @@ export default function CommunityPage() {
   });
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold mb-4">Patient Community</h1>
-        <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+    <div className="container mx-auto py-4 sm:py-8 px-4">
+      <div className="text-center mb-6 sm:mb-8">
+        <h1 className="text-3xl sm:text-4xl font-bold mb-2 sm:mb-4">Patient Community</h1>
+        <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
           Connect with others on similar cancer journeys, share experiences, and find support
         </p>
       </div>
 
-      <Tabs defaultValue="similar-patients" className="space-y-8">
-        <TabsList className="grid grid-cols-5 gap-4 bg-muted p-1 rounded-lg">
-          <TabsTrigger value="similar-patients" className="flex items-center gap-2">
+      <Tabs value={getActiveTab()} onValueChange={handleTabChange} className="space-y-6 sm:space-y-8">
+        <TabsList className="w-full overflow-x-auto flex sm:grid sm:grid-cols-5 gap-2 sm:gap-4 bg-muted p-1 rounded-lg">
+          <TabsTrigger value="similar-patients" className="flex items-center gap-2 min-w-max">
             <Users className="h-4 w-4" />
-            Similar Patients
+            <span className="hidden sm:inline">Similar Patients</span>
+            <span className="sm:hidden">Patients</span>
           </TabsTrigger>
-          <TabsTrigger value="discussions" className="flex items-center gap-2">
+          <TabsTrigger value="discussions" className="flex items-center gap-2 min-w-max">
             <MessageCircle className="h-4 w-4" />
-            Discussions
+            Topics
           </TabsTrigger>
-          <TabsTrigger value="mentor-others" className="flex items-center gap-2">
+          <TabsTrigger value="mentor-others" className="flex items-center gap-2 min-w-max">
             <Award className="h-4 w-4" />
-            Mentor Others
+            Mentor
           </TabsTrigger>
-          <TabsTrigger value="success-stories" className="flex items-center gap-2">
+          <TabsTrigger value="success-stories" className="flex items-center gap-2 min-w-max">
             <Heart className="h-4 w-4" />
-            Success Stories
+            <span className="hidden sm:inline">Success Stories</span>
+            <span className="sm:hidden">Success</span>
           </TabsTrigger>
-          <TabsTrigger value="support-groups" className="flex items-center gap-2">
+          <TabsTrigger value="support-groups" className="flex items-center gap-2 min-w-max">
             <Calendar className="h-4 w-4" />
-            Support Groups
+            <span className="hidden sm:inline">Support Groups</span>
+            <span className="sm:hidden">Groups</span>
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="similar-patients">
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
             {similarPatients?.map((patient) => (
               <Card key={patient.id} className="hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-4">
-                      <Avatar className="h-12 w-12">
+                      <Avatar className="h-10 sm:h-12 w-10 sm:w-12">
                         <AvatarImage src={`/avatars/${patient.id}.png`} />
                         <AvatarFallback>{patient.name.slice(0, 2)}</AvatarFallback>
                       </Avatar>
                       <div>
-                        <CardTitle>{patient.name}</CardTitle>
+                        <CardTitle className="text-base sm:text-lg">{patient.name}</CardTitle>
                         <CardDescription>
                           {patient.cancerType} • Stage {patient.stage}
                         </CardDescription>
@@ -123,19 +166,19 @@ export default function CommunityPage() {
                   <div className="space-y-4">
                     <div>
                       <p className="text-sm text-muted-foreground mb-2">Treatment Phase</p>
-                      <p>{patient.treatmentPhase}</p>
+                      <p className="text-sm sm:text-base">{patient.treatmentPhase}</p>
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground mb-2">Common Interests</p>
                       <div className="flex flex-wrap gap-2">
                         {patient.interests.map((interest) => (
-                          <Badge key={interest} variant="outline">
+                          <Badge key={interest} variant="outline" className="text-xs sm:text-sm">
                             {interest}
                           </Badge>
                         ))}
                       </div>
                     </div>
-                    <Button className="w-full" variant="outline">
+                    <Button className="w-full" variant="outline" size="sm">
                       <UserPlus className="h-4 w-4 mr-2" />
                       Connect
                     </Button>
@@ -146,23 +189,23 @@ export default function CommunityPage() {
           </div>
         </TabsContent>
 
-        <TabsContent value="discussions">
+        <TabsContent value="discussions" className="min-h-[300px]">
           <Card>
             <CardHeader>
-              <div className="flex justify-between items-center">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <CardTitle>Discussion Topics</CardTitle>
                 <Button>Start New Discussion</Button>
               </div>
             </CardHeader>
             <CardContent>
-              <ScrollArea className="h-[600px]">
+              <ScrollArea className="h-[400px] sm:h-[600px]">
                 <div className="space-y-4">
                   {discussionTopics?.map((topic) => (
                     <Card key={topic.id}>
                       <CardHeader>
                         <div className="flex justify-between items-start">
                           <div>
-                            <CardTitle className="text-lg">{topic.title}</CardTitle>
+                            <CardTitle className="text-base sm:text-lg">{topic.title}</CardTitle>
                             <CardDescription>
                               Started by {topic.author} • {topic.lastActivity}
                             </CardDescription>
@@ -173,7 +216,7 @@ export default function CommunityPage() {
                       <CardContent>
                         <div className="flex flex-wrap gap-2">
                           {topic.tags.map((tag) => (
-                            <Badge key={tag} variant="outline">
+                            <Badge key={tag} variant="outline" className="text-xs sm:text-sm">
                               {tag}
                             </Badge>
                           ))}
@@ -187,91 +230,28 @@ export default function CommunityPage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="mentor-others">
-          <div className="grid gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Your Mentor Profile</CardTitle>
-                <CardDescription>
-                  Share your experience to help match you with patients who can benefit from your journey
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">Areas of Expertise</label>
-                    <div className="flex flex-wrap gap-2">
-                      {["Breast Cancer", "Lung Cancer", "Chemotherapy", "Radiation", "Surgery", "Clinical Trials", "Lifestyle Changes", "Emotional Support"].map((tag) => (
-                        <Badge key={tag} variant="outline" className="cursor-pointer hover:bg-primary hover:text-primary-foreground">
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">Your Story</label>
-                    <Textarea
-                      placeholder="Share your cancer journey and what you learned..."
-                      className="min-h-[150px]"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">How You Can Help</label>
-                    <Textarea
-                      placeholder="Describe how you'd like to support other patients..."
-                      className="min-h-[100px]"
-                    />
-                  </div>
-
-                  <Button className="w-full">Save Profile</Button>
+        <TabsContent value="mentor-others" className="min-h-[300px]">
+          <Card>
+            <CardHeader>
+              <CardTitle>Your Mentor Profile</CardTitle>
+              <CardDescription>
+                Share your experience to help match you with patients who can benefit from your journey
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8">
+                Please visit the dedicated Mentor page for the full mentoring experience.
+                <div className="mt-4">
+                  <Button onClick={() => setLocation("/community/mentor")}>
+                    Go to Mentor Dashboard
+                  </Button>
                 </div>
-              </CardContent>
-            </Card>
-
-            {/* Current Mentees Section */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Your Current Mentees</CardTitle>
-                <CardDescription>Patients you're currently mentoring</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ScrollArea className="h-[300px]">
-                  <div className="space-y-4">
-                    {mentees?.map((mentee) => (
-                      <Card key={mentee.id}>
-                        <CardContent className="pt-6">
-                          <div className="flex items-start gap-4">
-                            <Avatar className="h-12 w-12">
-                              <AvatarImage src={mentee.avatar} />
-                              <AvatarFallback>{mentee.name.slice(0, 2)}</AvatarFallback>
-                            </Avatar>
-                            <div className="flex-1">
-                              <h3 className="font-semibold">{mentee.name}</h3>
-                              <p className="text-sm text-muted-foreground">
-                                {mentee.diagnosis} • Stage {mentee.stage}
-                              </p>
-                              <div className="flex gap-2 mt-2">
-                                <Button variant="outline" size="sm">Message</Button>
-                                <Button variant="outline" size="sm">Schedule Call</Button>
-                              </div>
-                            </div>
-                            <Badge variant="outline" className="mt-1">
-                              {mentee.status}
-                            </Badge>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                </ScrollArea>
-              </CardContent>
-            </Card>
-          </div>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
 
-        <TabsContent value="success-stories">
+        <TabsContent value="success-stories" className="min-h-[300px]">
           <Card>
             <CardHeader>
               <CardTitle>Success Stories</CardTitle>
@@ -280,14 +260,14 @@ export default function CommunityPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-12 text-muted-foreground">
+              <div className="text-center py-8 sm:py-12 text-muted-foreground">
                 Coming soon! Share your success story and inspire others.
               </div>
             </CardContent>
           </Card>
         </TabsContent>
 
-        <TabsContent value="support-groups">
+        <TabsContent value="support-groups" className="min-h-[300px]">
           <Card>
             <CardHeader>
               <CardTitle>Virtual Support Groups</CardTitle>
@@ -296,7 +276,7 @@ export default function CommunityPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-12 text-muted-foreground">
+              <div className="text-center py-8 sm:py-12 text-muted-foreground">
                 Support group scheduling coming soon!
               </div>
             </CardContent>
