@@ -68,25 +68,20 @@ export function JourneyMap() {
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          {/* More interesting curved path with waves */}
+          {/* Angled path */}
           <path
-            d="M 50,60 
-               C 150,90 200,30 300,60 
-               S 450,90 550,60 
-               S 700,30 750,60"
+            d="M 50,100 L 750,20"
             className="stroke-blue-200"
-            strokeWidth="30"
-            strokeLinecap="round"
-            fill="none"
+            strokeWidth="4"
+            strokeDasharray="8 4"
           />
 
           {/* Stages positioned along the path */}
           {stages.map((stage, index) => {
-            // Calculate position along the curved path
+            // Calculate position along the angled path
             const progress = index / (stages.length - 1);
             const x = 50 + progress * 700;
-            // Add vertical variation based on the progress
-            const y = 60 + Math.sin(progress * Math.PI * 2) * 20;
+            const y = 100 - progress * 80; // Create upward slope
 
             return (
               <TooltipProvider key={stage.id}>
@@ -98,11 +93,25 @@ export function JourneyMap() {
                       onMouseLeave={() => setHoveredStage(null)}
                       onClick={() => navigate(stage.link)}
                     >
-                      {/* Circle background */}
+                      {/* Larger circle with border */}
                       <circle
                         cx={x}
                         cy={y}
-                        r="15"
+                        r="18"
+                        className="fill-white stroke-2"
+                        stroke={
+                          stage.status === 'completed' ? '#22c55e' :
+                          stage.status === 'current' ? '#3b82f6' :
+                          '#d1d5db'
+                        }
+                        strokeWidth="2"
+                      />
+
+                      {/* Inner colored circle */}
+                      <circle
+                        cx={x}
+                        cy={y}
+                        r="14"
                         className={cn(
                           stage.status === 'completed' ? 'fill-green-500' :
                           stage.status === 'current' ? 'fill-blue-500' :
