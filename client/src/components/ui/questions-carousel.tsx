@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { cn } from "@/lib/utils";
 import { ArrowLeft, ArrowRight } from "lucide-react";
@@ -27,8 +27,19 @@ export function QuestionsCarousel() {
     if (emblaApi) emblaApi.scrollNext();
   }, [emblaApi]);
 
+  // Auto-scroll setup
+  useEffect(() => {
+    if (emblaApi) {
+      const autoplay = setInterval(() => {
+        emblaApi.scrollNext();
+      }, 4000); // Change slide every 4 seconds
+
+      return () => clearInterval(autoplay);
+    }
+  }, [emblaApi]);
+
   return (
-    <div className="relative px-4 sm:px-6 py-8 sm:py-12 bg-white/5 backdrop-blur-sm rounded-lg">
+    <div className="relative px-4 sm:px-6 py-12 sm:py-16 bg-gradient-to-r from-blue-600/10 via-indigo-600/10 to-blue-600/10 backdrop-blur-lg rounded-xl border border-white/10">
       <div className="overflow-hidden" ref={emblaRef}>
         <div className="flex">
           {questions.map((question, i) => (
@@ -36,11 +47,11 @@ export function QuestionsCarousel() {
               key={i}
               className={cn(
                 "flex-[0_0_100%] min-w-0 relative px-4",
-                "transition-opacity duration-500",
+                "animate-fade-in transition-all duration-500 ease-in-out",
               )}
             >
               <div className="text-center">
-                <p className="text-xl sm:text-2xl lg:text-3xl font-semibold text-white/90">
+                <p className="text-xl sm:text-2xl lg:text-3xl font-semibold bg-gradient-to-r from-white via-white/90 to-white/80 bg-clip-text text-transparent">
                   {question}
                 </p>
               </div>
@@ -51,7 +62,7 @@ export function QuestionsCarousel() {
       <Button
         variant="ghost"
         size="icon"
-        className="absolute left-2 top-1/2 -translate-y-1/2 text-white/80 hover:text-white hover:bg-white/10"
+        className="absolute left-2 top-1/2 -translate-y-1/2 text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200"
         onClick={scrollPrev}
       >
         <ArrowLeft className="h-6 w-6" />
@@ -59,7 +70,7 @@ export function QuestionsCarousel() {
       <Button
         variant="ghost"
         size="icon"
-        className="absolute right-2 top-1/2 -translate-y-1/2 text-white/80 hover:text-white hover:bg-white/10"
+        className="absolute right-2 top-1/2 -translate-y-1/2 text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200"
         onClick={scrollNext}
       >
         <ArrowRight className="h-6 w-6" />
