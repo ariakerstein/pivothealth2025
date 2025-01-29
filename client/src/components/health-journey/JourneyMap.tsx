@@ -18,13 +18,6 @@ export type JourneyStage = {
 
 const stages: JourneyStage[] = [
   {
-    id: 'intake',
-    title: 'Intake',
-    description: 'Initial consultation and information gathering',
-    status: 'completed',
-    link: '/onboarding'
-  },
-  {
     id: 'diagnosis',
     title: 'Diagnosis',
     description: 'Comprehensive evaluation and testing',
@@ -32,30 +25,30 @@ const stages: JourneyStage[] = [
     link: '/tests'
   },
   {
-    id: 'treatment-decision',
-    title: 'Treatment Decision',
-    description: 'Reviewing options and creating a treatment plan',
+    id: 'decide',
+    title: 'Decide',
+    description: 'Review options and create treatment plan',
     status: 'upcoming',
     link: '/chat'
   },
   {
-    id: 'treatment',
-    title: 'Treatment',
-    description: 'Actively undergoing chosen treatment',
+    id: 'connect',
+    title: 'Connect',
+    description: 'Connect with healthcare providers and support network',
+    status: 'upcoming',
+    link: '/community'
+  },
+  {
+    id: 'treat',
+    title: 'Treat',
+    description: 'Active treatment and monitoring',
     status: 'upcoming',
     link: '/documents'
   },
   {
-    id: 'monitor',
-    title: 'Monitoring',
-    description: 'Regular check-ups and progress tracking',
-    status: 'upcoming',
-    link: '/dashboard'
-  },
-  {
-    id: 'lifestyle',
-    title: 'Lifestyle Enhancement',
-    description: 'Maintaining health and wellness practices',
+    id: 'discover',
+    title: 'Discover',
+    description: 'Explore resources and lifestyle improvements',
     status: 'upcoming',
     link: '/recommendations'
   }
