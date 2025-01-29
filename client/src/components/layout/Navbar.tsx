@@ -10,11 +10,19 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu } from "lucide-react";
+import { Menu, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AvatarCustomizer } from "@/components/ui/avatar-customizer";
 import { useUser } from "@/hooks/use-user";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu";
 
 const navItems = [
   { href: "/", label: "Home" },
@@ -23,7 +31,14 @@ const navItems = [
   { href: "/recommendations", label: "Recommendations" },
   { href: "/discover", label: "Discover" },
   { href: "/documents", label: "Documents" },
-  { href: "/community", label: "Community" },
+];
+
+const communityItems = [
+  { href: "/community/patients", label: "Patients Like Me" },
+  { href: "/community/topics", label: "Topics" },
+  { href: "/community/mentor", label: "Mentor" },
+  { href: "/community/success-stories", label: "Success Stories" },
+  { href: "/community/groups", label: "Groups" },
 ];
 
 export default function Navbar() {
@@ -43,7 +58,7 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
+          <div className="hidden md:flex items-center space-x-6 text-sm font-medium">
             {navItems.map((item) => (
               <Link
                 key={item.href}
@@ -58,7 +73,37 @@ export default function Navbar() {
                 {item.label}
               </Link>
             ))}
-          </nav>
+
+            {/* Desktop Community Dropdown */}
+            <NavigationMenu>
+              <NavigationMenuList>
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger>
+                    Community
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <ul className="grid w-[200px] gap-2 p-4">
+                      {communityItems.map((item) => (
+                        <li key={item.href}>
+                          <Link
+                            href={item.href}
+                            className={cn(
+                              "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+                              location === item.href
+                                ? "bg-accent text-accent-foreground"
+                                : "text-foreground/60"
+                            )}
+                          >
+                            {item.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
+          </div>
 
           {/* Mobile Navigation */}
           <Sheet>
@@ -88,6 +133,27 @@ export default function Navbar() {
                     {item.label}
                   </Link>
                 ))}
+
+                {/* Mobile Community Section */}
+                <div className="pt-2">
+                  <div className="px-2 py-1 text-sm font-semibold text-foreground/70">
+                    Community
+                  </div>
+                  {communityItems.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={cn(
+                        "block px-4 py-1 text-sm transition-colors hover:text-foreground/80",
+                        location === item.href
+                          ? "text-foreground font-medium"
+                          : "text-foreground/60"
+                      )}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
               </nav>
             </SheetContent>
           </Sheet>
