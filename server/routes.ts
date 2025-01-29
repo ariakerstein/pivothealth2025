@@ -95,17 +95,25 @@ export function registerRoutes(app: Express): Server {
         - For symptom management, provide general, safe recommendations`
       };
 
-      // Ensure messages alternate between user and assistant
-      const formattedMessages = [systemMessage];
-      let lastRole = null;
+      // Start with system message
+      let formattedMessages = [systemMessage];
 
-      for (const message of messages) {
-        if (message.role === lastRole) {
-          console.warn('Skipping consecutive message with same role:', message.role);
-          continue;
+      // Add the last message if it's from user, or the last two messages if they alternate properly
+      const userMessages = messages.filter(m => m.role === "user");
+      const lastMessage = userMessages[userMessages.length - 1];
+
+      if (lastMessage) {
+        // If we have a previous assistant message before the last user message, include it
+        const prevAssistantMessage = messages
+          .slice(0, -1)
+          .reverse()
+          .find(m => m.role === "assistant");
+
+        if (prevAssistantMessage) {
+          formattedMessages.push(prevAssistantMessage);
         }
-        formattedMessages.push(message);
-        lastRole = message.role;
+
+        formattedMessages.push(lastMessage);
       }
 
       // Send request to Perplexity API
@@ -128,7 +136,7 @@ export function registerRoutes(app: Express): Server {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ error: response.statusText }));
         console.error('Perplexity API error:', errorData);
-        throw new Error(errorData.error || response.statusText);
+        throw new Error(errorData.error?.message || response.statusText);
       }
 
       const data = await response.json();
