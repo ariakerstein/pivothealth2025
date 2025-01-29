@@ -11,37 +11,27 @@ import OpenAI from "openai";
 // Configure multer for memory storage
 const upload = multer({ storage: multer.memoryStorage() });
 
-// Risk score calculation helper
-function calculateRiskScore(factors: any): number {
-  let score = 0;
-
-  // Age factor (0-25 points)
-  const age = factors.age;
-  if (age >= 70) score += 25;
-  else if (age >= 60) score += 20;
-  else if (age >= 50) score += 15;
-  else score += 10;
-
-  // PSA Level factor (0-35 points)
-  const psa = factors.psaLevel;
-  if (psa > 10) score += 35;
-  else if (psa > 4) score += 25;
-  else if (psa > 2.5) score += 15;
-  else score += 5;
-
-  // Family History factor (0-20 points)
-  if (factors.familyHistory) score += 20;
-
-  // Previous Biopsies factor (0-10 points)
-  score += Math.min(factors.previousBiopsies * 5, 10);
-
-  // Other conditions (0-10 points)
-  score += Math.min(factors.otherConditions.length * 2, 10);
-
-  return score;
-}
-
 export function registerRoutes(app: Express): Server {
+  // Add waitlist endpoint
+  app.post("/api/waitlist", async (req, res) => {
+    try {
+      const { email } = req.body;
+
+      if (!email || !email.includes('@')) {
+        return res.status(400).json({ error: "Invalid email address" });
+      }
+
+      // Here you would typically save the email to your database
+      // For now, we'll just simulate success
+      console.log('Waitlist signup:', email);
+
+      res.json({ status: "success", message: "Added to waitlist" });
+    } catch (error) {
+      console.error('Waitlist error:', error);
+      res.status(500).json({ error: "Failed to join waitlist" });
+    }
+  });
+
   // sets up /api/register, /api/login, /api/logout, /api/user
   setupAuth(app);
 
@@ -59,7 +49,7 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
-app.post("/api/chat", async (req, res) => {
+  app.post("/api/chat", async (req, res) => {
     try {
       const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -113,7 +103,7 @@ app.post("/api/chat", async (req, res) => {
       res.json({ message: messageContent });
     } catch (error) {
       console.error('Chat API error:', error);
-      res.status(500).json({ 
+      res.status(500).json({
         error: "Failed to process chat message",
         message: "Our health assistant is temporarily unavailable. Please try again later."
       });
@@ -820,4 +810,9 @@ app.post("/api/chat", async (req, res) => {
 
   const httpServer = createServer(app);
   return httpServer;
+}
+
+function calculateRiskScore(riskFactors: any): number {
+  // Implement your risk score calculation logic here
+  return 0; // Placeholder
 }
