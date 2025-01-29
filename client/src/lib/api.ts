@@ -21,8 +21,11 @@ export async function sendMessage(request: ChatRequest): Promise<ChatResponse> {
   });
 
   if (!response.ok) {
-    throw new Error("Failed to send message");
+    const errorText = await response.text();
+    console.error('Chat API error:', errorText);
+    throw new Error(errorText || "Failed to send message");
   }
 
-  return response.json();
+  const data = await response.json();
+  return { message: data.message };
 }

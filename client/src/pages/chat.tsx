@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -7,6 +7,7 @@ import { useMutation } from "@tanstack/react-query";
 import { sendMessage } from "@/lib/api";
 import { Loader2, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useToast } from "@/hooks/use-toast";
 
 interface Message {
   role: "user" | "assistant";
@@ -42,22 +43,33 @@ How can I assist you today?`
 export default function Chat() {
   const [messages, setMessages] = useState<Message[]>([initialMessage]);
   const [input, setInput] = useState("");
+  const { toast } = useToast();
 
   const mutation = useMutation({
     mutationFn: sendMessage,
     onSuccess: (response) => {
       setMessages(prev => [...prev, { role: "assistant", content: response.message }]);
     },
+    onError: (error: Error) => {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Failed to get response from AI assistant",
+      });
+    }
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim()) return;
+    if (!input.trim() || mutation.isPending) return;
 
-    const newMessage = { role: "user" as const, content: input };
+    const newMessage = { role: "user" as const, content: input.trim() };
     setMessages(prev => [...prev, newMessage]);
     setInput("");
-    mutation.mutate({ messages: [...messages, newMessage] });
+
+    mutation.mutate({ 
+      messages: [...messages, newMessage]
+    });
   };
 
   return (
@@ -108,6 +120,14 @@ export default function Chat() {
                   Thinking...
                 </div>
               )}
+              {mutation.isError && (
+                <Alert variant="destructive" className="mt-2">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    Failed to get response. Please try again.
+                  </AlertDescription>
+                </Alert>
+              )}
             </div>
           </ScrollArea>
 
@@ -118,8 +138,15 @@ export default function Chat() {
               placeholder="Type your health question..."
               disabled={mutation.isPending}
             />
-            <Button type="submit" disabled={mutation.isPending}>
-              Send
+            <Button type="submit" disabled={mutation.isPending || !input.trim()}>
+              {mutation.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Sending...
+                </>
+              ) : (
+                'Send'
+              )}
             </Button>
           </form>
         </CardContent>
