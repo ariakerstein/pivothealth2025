@@ -51,7 +51,6 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white">
       <div className="container mx-auto px-4 lg:px-8">
-        {/* Navigation */}
         <nav className="py-6 flex justify-between items-center">
           <div className="flex items-center gap-2">
             <Logo className="w-10 h-10" />
@@ -90,7 +89,7 @@ export default function LandingPage() {
                 />
                 <Button 
                   type="submit"
-                  className="bg-blue-600 hover:bg-blue-700 min-w-[180px]"
+                  className="bg-blue-600 hover:bg-blue-700 min-w-[180px] font-semibold transition-colors duration-200"
                   disabled={joinWaitlist.isPending}
                 >
                   {joinWaitlist.isPending ? (
@@ -140,49 +139,6 @@ export default function LandingPage() {
                 <p className="text-gray-400">
                   Connect with mentors, experts, and peers who understand your journey and can provide valuable guidance and support.
                 </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="max-w-5xl mx-auto mt-24">
-            <h3 className="text-2xl font-semibold text-center mb-8">
-              Trusted Partners & Integrations
-            </h3>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 items-center justify-items-center">
-              <div className="w-40 h-20 flex items-center justify-center">
-                <img
-                  src="./attached_assets/7e0cbf80.jpg"
-                  alt="Cancer Patient Lab"
-                  className="max-w-full max-h-full object-contain filter brightness-0 invert opacity-70 hover:opacity-100 transition-opacity"
-                />
-              </div>
-              <div className="w-40 h-20 flex items-center justify-center">
-                <img
-                  src="./attached_assets/05ccbf77.jpg"
-                  alt="Cancer Commons"
-                  className="max-w-full max-h-full object-contain filter brightness-0 invert opacity-70 hover:opacity-100 transition-opacity"
-                />
-              </div>
-              <div className="w-40 h-20 flex items-center justify-center">
-                <img
-                  src="./attached_assets/c5cddafb.jpg"
-                  alt="Protean Maps"
-                  className="max-w-full max-h-full object-contain filter brightness-0 invert opacity-70 hover:opacity-100 transition-opacity"
-                />
-              </div>
-              <div className="w-40 h-20 flex items-center justify-center">
-                <img
-                  src="./attached_assets/b9941746.jpg"
-                  alt="SageMedic"
-                  className="max-w-full max-h-full object-contain filter brightness-0 invert opacity-70 hover:opacity-100 transition-opacity"
-                />
-              </div>
-              <div className="w-40 h-20 flex items-center justify-center">
-                <img
-                  src="./attached_assets/63945aab.jpg"
-                  alt="Aware Foundation"
-                  className="max-w-full max-h-full object-contain filter brightness-0 invert opacity-70 hover:opacity-100 transition-opacity"
-                />
               </div>
             </div>
           </div>
