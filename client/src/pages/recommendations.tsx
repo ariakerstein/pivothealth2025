@@ -189,10 +189,10 @@ export default function Recommendations() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6 mb-8">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-bold">Your Progress</h2>
+    <div className="max-w-4xl mx-auto p-4 sm:p-6 space-y-6">
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 sm:p-6 mb-6 sm:mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
+          <h2 className="text-xl sm:text-2xl font-bold">Your Progress</h2>
           {streak?.currentStreak ? (
             <div className="flex items-center gap-2 text-orange-600">
               <Flame className="h-5 w-5" />
@@ -201,7 +201,7 @@ export default function Recommendations() {
           ) : null}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {achievements?.slice(0, 3).map((achievement) => (
             <AchievementCard
               key={achievement.id}
@@ -211,19 +211,21 @@ export default function Recommendations() {
           ))}
         </div>
       </div>
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Your Health Recommendations</h1>
-        <div className="space-x-2">
+
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <h1 className="text-2xl sm:text-3xl font-bold">Your Health Recommendations</h1>
+        <div className="flex gap-2 w-full sm:w-auto">
           <Button
             onClick={() => generateMutation.mutate()}
             disabled={generateMutation.isPending}
+            className="flex-1 sm:flex-none"
           >
             {generateMutation.isPending && (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             )}
             Generate New
           </Button>
-          <Button onClick={handleExport} variant="outline">
+          <Button onClick={handleExport} variant="outline" className="flex-1 sm:flex-none">
             <Download className="mr-2 h-4 w-4" />
             Export
           </Button>
@@ -233,11 +235,11 @@ export default function Recommendations() {
       <div className="grid gap-6">
         {recommendations?.map((rec) => (
           <Card key={rec.id} className="overflow-hidden">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <CardTitle>{rec.title}</CardTitle>
-                  <div className="flex gap-2">
+            <CardHeader className="p-4 sm:p-6">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="space-y-2">
+                  <CardTitle className="text-lg sm:text-xl">{rec.title}</CardTitle>
+                  <div className="flex flex-wrap gap-2">
                     <Badge variant="outline">{rec.category}</Badge>
                     <Badge className={getPriorityColor(rec.priority)}>
                       {rec.priority} Priority
@@ -250,6 +252,7 @@ export default function Recommendations() {
                     id: rec.id,
                     status: rec.status === 'active' ? 'completed' : 'active'
                   })}
+                  className="w-full sm:w-auto"
                 >
                   {rec.status === 'completed' ? (
                     <>
@@ -265,17 +268,17 @@ export default function Recommendations() {
                 </Button>
               </div>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-muted-foreground">{rec.description}</p>
+            <CardContent className="p-4 sm:p-6 space-y-4">
+              <p className="text-muted-foreground text-sm sm:text-base">{rec.description}</p>
 
               {rec.supportingData && rec.supportingData.length > 0 && (
-                <div className="rounded-lg bg-muted/50 p-4">
+                <div className="rounded-lg bg-muted/50 p-3 sm:p-4">
                   <h4 className="font-semibold mb-2">Supporting Data:</h4>
                   <ul className="space-y-2">
                     {rec.supportingData.map((data, i) => (
                       <li key={i} className="flex items-center text-sm">
-                        <AlertTriangle className="mr-2 h-4 w-4 text-yellow-500" />
-                        {data.type}: {data.value} - {data.context}
+                        <AlertTriangle className="mr-2 h-4 w-4 text-yellow-500 flex-shrink-0" />
+                        <span className="break-words">{data.type}: {data.value} - {data.context}</span>
                       </li>
                     ))}
                   </ul>
@@ -286,9 +289,9 @@ export default function Recommendations() {
                 <h4 className="font-semibold mb-2">Action Items:</h4>
                 <ul className="space-y-2">
                   {rec.actionItems.map((item, i) => (
-                    <li key={i} className="flex items-center text-sm">
-                      <ArrowRight className="mr-2 h-4 w-4 text-primary" />
-                      {item}
+                    <li key={i} className="flex items-start text-sm">
+                      <ArrowRight className="mr-2 h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                      <span className="break-words">{item}</span>
                     </li>
                   ))}
                 </ul>

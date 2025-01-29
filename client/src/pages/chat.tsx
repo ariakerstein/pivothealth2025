@@ -73,17 +73,17 @@ export default function Chat() {
   };
 
   return (
-    <div className="container max-w-3xl mx-auto py-8 space-y-4">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+    <div className="container px-4 sm:max-w-3xl mx-auto py-4 sm:py-8 space-y-4">
+      <Card className="border-0 sm:border">
+        <CardHeader className="px-4 sm:px-6">
+          <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl">
             Health Co-Pilot
-            <span className="text-sm font-normal text-muted-foreground">
+            <span className="text-xs sm:text-sm font-normal text-muted-foreground">
               (Evidence-Based Support)
             </span>
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-4 sm:p-6">
           <Alert className="mb-4 bg-blue-50 dark:bg-blue-950">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
@@ -91,7 +91,7 @@ export default function Chat() {
             </AlertDescription>
           </Alert>
 
-          <ScrollArea className="h-[500px] pr-4">
+          <ScrollArea className="h-[60vh] sm:h-[500px] pr-4">
             <div className="space-y-4">
               {messages.map((msg, i) => (
                 <div
@@ -99,7 +99,7 @@ export default function Chat() {
                   className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                 >
                   <div
-                    className={`rounded-lg px-4 py-2 max-w-[80%] ${
+                    className={`rounded-lg px-3 sm:px-4 py-2 max-w-[85%] sm:max-w-[80%] text-sm sm:text-base ${
                       msg.role === "user"
                         ? "bg-blue-600 text-white"
                         : msg === initialMessage
@@ -137,12 +137,17 @@ export default function Chat() {
               onChange={(e) => setInput(e.target.value)}
               placeholder="Type your health question..."
               disabled={mutation.isPending}
+              className="text-sm sm:text-base"
             />
-            <Button type="submit" disabled={mutation.isPending || !input.trim()}>
+            <Button 
+              type="submit" 
+              disabled={mutation.isPending || !input.trim()}
+              className="whitespace-nowrap"
+            >
               {mutation.isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Sending...
+                  <span className="hidden sm:inline">Sending...</span>
                 </>
               ) : (
                 'Send'
