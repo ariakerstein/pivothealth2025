@@ -5,34 +5,7 @@ import { useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { Loader2, Rocket, Shield, Heart } from "lucide-react";
-
-// Simple SVG logo component
-const Logo = () => (
-  <svg
-    width="120"
-    height="32"
-    viewBox="0 0 120 32"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    className="text-white"
-  >
-    <path
-      d="M12 8C8.13401 8 5 11.134 5 15C5 18.866 8.13401 22 12 22H20C23.866 22 27 18.866 27 15C27 11.134 23.866 8 20 8H12Z"
-      className="fill-blue-500"
-    />
-    <path
-      d="M35 15C35 11.134 38.134 8 42 8H50C53.866 8 57 11.134 57 15C57 18.866 53.866 22 50 22H42C38.134 22 35 18.866 35 15Z"
-      className="fill-blue-400"
-    />
-    <text
-      x="70"
-      y="20"
-      className="fill-current font-bold text-lg"
-    >
-      Pivot
-    </text>
-  </svg>
-);
+import { Logo } from "@/components/ui/logo";
 
 export default function LandingPage() {
   const [, setLocation] = useLocation();
@@ -79,7 +52,10 @@ export default function LandingPage() {
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white">
       <div className="container mx-auto px-4 lg:px-8">
         <nav className="py-6 flex justify-between items-center">
-          <Logo />
+          <div className="flex items-center gap-2">
+            <Logo className="w-10 h-10" />
+            <span className="text-xl font-semibold">Pivot Health</span>
+          </div>
           <div className="flex gap-4">
             <Button 
               variant="ghost" 
@@ -178,35 +154,35 @@ export default function LandingPage() {
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 items-center justify-items-center">
               <div className="w-40 h-20 flex items-center justify-center">
                 <img
-                  src="/attached_assets/7e0cbf80.jpg"
+                  src="attached_assets/7e0cbf80.jpg"
                   alt="Cancer Patient Lab"
                   className="max-w-full max-h-full object-contain filter brightness-0 invert opacity-70 hover:opacity-100 transition-opacity"
                 />
               </div>
               <div className="w-40 h-20 flex items-center justify-center">
                 <img
-                  src="/attached_assets/05ccbf77.jpg"
+                  src="attached_assets/05ccbf77.jpg"
                   alt="Cancer Commons"
                   className="max-w-full max-h-full object-contain filter brightness-0 invert opacity-70 hover:opacity-100 transition-opacity"
                 />
               </div>
               <div className="w-40 h-20 flex items-center justify-center">
                 <img
-                  src="/attached_assets/c5cddafb.jpg"
+                  src="attached_assets/c5cddafb.jpg"
                   alt="Protean Maps"
                   className="max-w-full max-h-full object-contain filter brightness-0 invert opacity-70 hover:opacity-100 transition-opacity"
                 />
               </div>
               <div className="w-40 h-20 flex items-center justify-center">
                 <img
-                  src="/attached_assets/b9941746.jpg"
+                  src="attached_assets/b9941746.jpg"
                   alt="SageMedic"
                   className="max-w-full max-h-full object-contain filter brightness-0 invert opacity-70 hover:opacity-100 transition-opacity"
                 />
               </div>
               <div className="w-40 h-20 flex items-center justify-center">
                 <img
-                  src="/attached_assets/63945aab.jpg"
+                  src="attached_assets/63945aab.jpg"
                   alt="Aware Foundation"
                   className="max-w-full max-h-full object-contain filter brightness-0 invert opacity-70 hover:opacity-100 transition-opacity"
                 />
