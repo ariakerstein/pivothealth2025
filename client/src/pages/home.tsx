@@ -1,6 +1,8 @@
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import OnboardingForm from "@/components/onboarding/OnboardingForm";
+import { WelcomeVideo } from "@/components/onboarding/WelcomeVideo";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
@@ -9,6 +11,7 @@ import { JourneyMap } from "@/components/health-journey/JourneyMap";
 
 export default function Home() {
   const { toast } = useToast();
+  const [showWelcome, setShowWelcome] = useState(true);
 
   const { data: recommendations } = useQuery<any[]>({
     queryKey: ['/api/recommendations/active'],
@@ -18,9 +21,31 @@ export default function Home() {
     queryKey: ['/api/documents'],
   });
 
+  const { data: user } = useQuery({
+    queryKey: ['/api/user'],
+  });
+
+  // Check if user has seen welcome video
+  useEffect(() => {
+    const hasSeenWelcome = localStorage.getItem('hasSeenWelcome');
+    if (hasSeenWelcome) {
+      setShowWelcome(false);
+    }
+  }, []);
+
+  const handleWelcomeClose = () => {
+    localStorage.setItem('hasSeenWelcome', 'true');
+    setShowWelcome(false);
+  };
+
   return (
     <div className="container mx-auto py-8 px-4">
-      {/* Journey Map */}
+      <WelcomeVideo 
+        isOpen={showWelcome} 
+        onClose={handleWelcomeClose}
+        userName={user?.name}
+      />
+
       <section className="mb-12 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 rounded-lg p-6">
         <h2 className="text-2xl font-bold tracking-tight mb-6">Your Health Journey</h2>
         <JourneyMap />
