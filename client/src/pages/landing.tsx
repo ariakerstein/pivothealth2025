@@ -115,9 +115,6 @@ export default function LandingPage() {
           </div>
 
           <div className="max-w-6xl mx-auto">
-            <h3 className="text-2xl font-semibold text-center mb-12">
-              How It Works
-            </h3>
             <div className="grid md:grid-cols-4 gap-8">
               <div className="text-center space-y-4">
                 <div className="bg-blue-600/20 w-12 h-12 rounded-full flex items-center justify-center mx-auto">
