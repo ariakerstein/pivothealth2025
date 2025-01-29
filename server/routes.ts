@@ -77,26 +77,36 @@ export function registerRoutes(app: Express): Server {
         });
       }
 
-      // Create message array with medical context
-      const messageArray = [
-        {
-          role: "system",
-          content: `You are a knowledgeable medical Co-Pilot assistant focused on cancer care. 
-          Provide accurate, evidence-based information while being empathetic. 
-          Always cite sources when possible. If unsure, acknowledge limitations and 
-          recommend consulting healthcare providers.
+      // Create message array with medical context and ensure proper alternation
+      const systemMessage = {
+        role: "system",
+        content: `You are a knowledgeable medical Co-Pilot assistant focused on cancer care. 
+        Provide accurate, evidence-based information while being empathetic. 
+        Always cite sources when possible. If unsure, acknowledge limitations and 
+        recommend consulting healthcare providers.
 
-          Important Guidelines:
-          - Be clear about being an AI Co-Pilot
-          - Provide evidence-based information from reputable medical sources
-          - Show empathy while maintaining professionalism
-          - Encourage consultation with healthcare providers for specific medical advice
-          - Focus on general information and support
-          - When discussing treatments, reference standard protocols
-          - For symptom management, provide general, safe recommendations`
-        },
-        ...messages
-      ];
+        Important Guidelines:
+        - Be clear about being an AI Co-Pilot
+        - Provide evidence-based information from reputable medical sources
+        - Show empathy while maintaining professionalism
+        - Encourage consultation with healthcare providers for specific medical advice
+        - Focus on general information and support
+        - When discussing treatments, reference standard protocols
+        - For symptom management, provide general, safe recommendations`
+      };
+
+      // Ensure messages alternate between user and assistant
+      const formattedMessages = [systemMessage];
+      let lastRole = null;
+
+      for (const message of messages) {
+        if (message.role === lastRole) {
+          console.warn('Skipping consecutive message with same role:', message.role);
+          continue;
+        }
+        formattedMessages.push(message);
+        lastRole = message.role;
+      }
 
       // Send request to Perplexity API
       const response = await fetch("https://api.perplexity.ai/chat/completions", {
@@ -107,7 +117,7 @@ export function registerRoutes(app: Express): Server {
         },
         body: JSON.stringify({
           model: "llama-3.1-sonar-small-128k-online",
-          messages: messageArray,
+          messages: formattedMessages,
           temperature: 0.2,
           max_tokens: 2048,
           search_domain_filter: ["nih.gov", "cancer.gov", "who.int", "mayoclinic.org", "cancer.org"],
