@@ -59,18 +59,18 @@ export function JourneyMap() {
   const [, navigate] = useLocation();
 
   return (
-    <div className="w-full overflow-x-auto">
-      <div className="min-w-[800px] relative">
+    <div className="w-full">
+      <div className="max-w-[600px] mx-auto relative">
         <svg
           width="100%"
           height="120"
-          viewBox="0 0 800 120"
+          viewBox="0 0 600 120"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          {/* Angled path */}
+          {/* Curved path */}
           <path
-            d="M 50,100 L 750,20"
+            d="M 50,80 Q 150,120 300,60 T 550,80"
             className="stroke-blue-200"
             strokeWidth="4"
             strokeDasharray="8 4"
@@ -78,10 +78,11 @@ export function JourneyMap() {
 
           {/* Stages positioned along the path */}
           {stages.map((stage, index) => {
-            // Calculate position along the angled path
+            // Calculate position along the curved path
             const progress = index / (stages.length - 1);
-            const x = 50 + progress * 700;
-            const y = 100 - progress * 80; // Create upward slope
+            const x = 50 + progress * 500;
+            // Calculate y position based on the curve
+            const y = 80 + Math.sin(progress * Math.PI) * -20;
 
             return (
               <TooltipProvider key={stage.id}>
