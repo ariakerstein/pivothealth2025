@@ -69,6 +69,14 @@ export function registerRoutes(app: Express): Server {
     try {
       const { messages } = req.body;
 
+      // Validate input
+      if (!Array.isArray(messages)) {
+        return res.status(400).json({ 
+          error: "Invalid request format",
+          message: "Messages must be an array"
+        });
+      }
+
       // Create message array with medical context
       const messageArray = [
         {
@@ -107,11 +115,12 @@ export function registerRoutes(app: Express): Server {
         })
       });
 
-      if (!response.ok) {
-        throw new Error(`API request failed: ${response.statusText}`);
-      }
-
       const data = await response.json();
+
+      if (!response.ok) {
+        console.error('Perplexity API error:', data);
+        throw new Error(`API request failed: ${data.error || response.statusText}`);
+      }
 
       // Format response with citations
       const messageContent = data.choices[0].message.content;

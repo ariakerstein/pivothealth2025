@@ -9,6 +9,7 @@ interface ChatRequest {
 
 interface ChatResponse {
   message: string;
+  citations?: string[];
 }
 
 export async function sendMessage(request: ChatRequest): Promise<ChatResponse> {
@@ -21,11 +22,15 @@ export async function sendMessage(request: ChatRequest): Promise<ChatResponse> {
   });
 
   if (!response.ok) {
-    const errorText = await response.text();
-    console.error('Chat API error:', errorText);
-    throw new Error(errorText || "Failed to send message");
+    const errorData = await response.json().catch(() => null);
+    const errorMessage = errorData?.message || response.statusText;
+    console.error('Chat API error:', errorMessage);
+    throw new Error(errorMessage || "Failed to send message");
   }
 
   const data = await response.json();
-  return { message: data.message };
+  return {
+    message: data.message,
+    citations: data.citations
+  };
 }
