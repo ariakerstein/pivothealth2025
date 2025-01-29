@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { Loader2, Rocket, Shield, Heart, Sparkles } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
+import { QuestionsCarousel } from "@/components/ui/questions-carousel";
 
 export default function LandingPage() {
   const [, setLocation] = useLocation();
@@ -107,6 +108,11 @@ export default function LandingPage() {
               Be the first to know when we launch. We'll never share your email.
             </p>
           </form>
+
+          {/* Questions Carousel */}
+          <div className="max-w-4xl mx-auto">
+            <QuestionsCarousel />
+          </div>
 
           <div className="max-w-6xl mx-auto">
             <h3 className="text-2xl font-semibold text-center mb-12">
