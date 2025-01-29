@@ -3,11 +3,11 @@ import useEmblaCarousel from "embla-carousel-react";
 import { cn } from "@/lib/utils";
 
 const questions = [
-  "What tests should I get?",
-  "What should I know at this point in my journey that I don't know?",
-  "Is there someone who looks just like me but is a few years ahead of me in dealing with my condition?",
-  "What questions should I be asking my doctor?",
-  "What services are there to address the needs I'm identifying?"
+  "\"I need to understand what tests I should get at this stage...\"",
+  "\"What are the important things I should know about my journey that I might be missing?\"",
+  "\"I wish I could connect with someone who has been through exactly what I'm going through...\"",
+  "\"What questions should I be asking my doctor that I haven't thought of?\"",
+  "\"How do I find the right services to address my specific needs?\""
 ];
 
 export function QuestionsCarousel() {
@@ -40,7 +40,7 @@ export function QuestionsCarousel() {
             )}
           >
             <div className="text-center">
-              <p className="text-xl sm:text-2xl lg:text-3xl font-semibold bg-gradient-to-r from-white via-white/90 to-white/80 bg-clip-text text-transparent">
+              <p className="text-xl sm:text-2xl lg:text-3xl font-medium italic bg-gradient-to-r from-white via-white/90 to-white/80 bg-clip-text text-transparent">
                 {question}
               </p>
             </div>
