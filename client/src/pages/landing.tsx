@@ -169,6 +169,50 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
+
+          {/* Partners & Integrations Section */}
+          <div className="max-w-5xl mx-auto mt-24">
+            <h3 className="text-2xl font-semibold text-center mb-8">
+              Trusted Partners & Integrations
+            </h3>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 items-center justify-items-center">
+              <div className="w-40 h-20 flex items-center justify-center">
+                <img
+                  src="/attached_assets/7e0cbf80.jpg"
+                  alt="Cancer Patient Lab"
+                  className="max-w-full max-h-full object-contain filter brightness-0 invert opacity-70 hover:opacity-100 transition-opacity"
+                />
+              </div>
+              <div className="w-40 h-20 flex items-center justify-center">
+                <img
+                  src="/attached_assets/05ccbf77.jpg"
+                  alt="Cancer Commons"
+                  className="max-w-full max-h-full object-contain filter brightness-0 invert opacity-70 hover:opacity-100 transition-opacity"
+                />
+              </div>
+              <div className="w-40 h-20 flex items-center justify-center">
+                <img
+                  src="/attached_assets/c5cddafb.jpg"
+                  alt="Protean Maps"
+                  className="max-w-full max-h-full object-contain filter brightness-0 invert opacity-70 hover:opacity-100 transition-opacity"
+                />
+              </div>
+              <div className="w-40 h-20 flex items-center justify-center">
+                <img
+                  src="/attached_assets/b9941746.jpg"
+                  alt="SageMedic"
+                  className="max-w-full max-h-full object-contain filter brightness-0 invert opacity-70 hover:opacity-100 transition-opacity"
+                />
+              </div>
+              <div className="w-40 h-20 flex items-center justify-center">
+                <img
+                  src="/attached_assets/63945aab.jpg"
+                  alt="Aware Foundation"
+                  className="max-w-full max-h-full object-contain filter brightness-0 invert opacity-70 hover:opacity-100 transition-opacity"
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
