@@ -95,15 +95,19 @@ export function TypeFormQuestion({
             </Button>
           )}
 
-          {!isLast && (
-            <Button
-              size="lg"
-              onClick={onNext}
-              className="gap-2"
-            >
-              Next <ChevronRight className="h-4 w-4" />
-            </Button>
-          )}
+          <Button
+            size="lg"
+            onClick={onNext}
+            className="gap-2"
+          >
+            {isLast ? (
+              "Complete Profile"
+            ) : (
+              <>
+                Next <ChevronRight className="h-4 w-4" />
+              </>
+            )}
+          </Button>
         </div>
       </motion.div>
     </div>
