@@ -92,9 +92,9 @@ export function JourneyMap({ onIntakeClick }: JourneyMapProps) {
           xmlns="http://www.w3.org/2000/svg"
           className="overflow-visible"
         >
-          {/* More pronounced S-shaped path */}
+          {/* More pronounced S-shaped path that trends upward */}
           <path
-            d="M 50,100 C 150,25 250,175 300,100 S 450,175 550,100"
+            d="M 50,150 C 150,175 250,75 300,100 S 450,25 550,50"
             className="stroke-blue-200"
             strokeWidth="4"
             strokeDasharray="8 4"
@@ -107,8 +107,8 @@ export function JourneyMap({ onIntakeClick }: JourneyMapProps) {
             const progress = index / (currentStages.length - 1);
             const x = 50 + progress * 500;
 
-            // Calculate y position based on the new, more dramatic S curve
-            const y = 100 + Math.sin(progress * Math.PI * 2) * 50; //Increased amplitude
+            // Calculate y position based on the upward-trending S curve
+            const y = 150 - progress * 100 + Math.sin(progress * Math.PI * 2) * 50;
 
             return (
               <TooltipProvider key={stage.id}>
