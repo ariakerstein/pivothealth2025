@@ -7,7 +7,13 @@ import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Upload, FileText, Heart, UserCog, ClipboardCheck } from "lucide-react";
 import { JourneyMap } from "@/components/health-journey/JourneyMap";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogHeader, 
+  DialogTitle,
+  DialogDescription 
+} from "@/components/ui/dialog";
 
 export default function Home() {
   const { toast } = useToast();
@@ -134,19 +140,26 @@ export default function Home() {
         </Card>
       </div>
 
-      {/* Typeform-style Dialog */}
+      {/* Improved Dialog with better accessibility */}
       <Dialog open={showOnboarding} onOpenChange={setShowOnboarding}>
-        <DialogContent className="max-w-4xl">
-          <DialogHeader>
+        <DialogContent className="max-w-4xl h-[80vh]">
+          <DialogHeader className="space-y-2">
             <DialogTitle>Health Profile</DialogTitle>
+            <DialogDescription>
+              Help us understand your health needs better by providing some basic information.
+            </DialogDescription>
           </DialogHeader>
-          <OnboardingForm onComplete={() => {
-            setShowOnboarding(false);
-            toast({
-              title: "Profile Updated",
-              description: "Your health information has been updated successfully."
-            });
-          }} />
+          <div className="flex-1 overflow-y-auto">
+            <OnboardingForm 
+              onComplete={() => {
+                setShowOnboarding(false);
+                toast({
+                  title: "Profile Updated",
+                  description: "Your health information has been updated successfully."
+                });
+              }} 
+            />
+          </div>
         </DialogContent>
       </Dialog>
     </div>
