@@ -173,11 +173,21 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
 
   const progress = ((step + 1) / FORM_STEPS.length) * 100;
 
-  const nextStep = () => {
+  const nextStep = async () => {
     if (step === FORM_STEPS.length - 1) {
-      form.handleSubmit((data) => mutation.mutate(data))();
+      // On last step, validate all fields before submitting
+      const isValid = await form.trigger();
+      if (isValid) {
+        const formData = form.getValues();
+        mutation.mutate(formData);
+      }
     } else {
-      setStep((s) => s + 1);
+      // On intermediate steps, validate current step's fields before proceeding
+      const currentFields = FORM_STEPS[step].fields;
+      const isValid = await form.trigger(currentFields);
+      if (isValid) {
+        setStep((s) => s + 1);
+      }
     }
   };
 
