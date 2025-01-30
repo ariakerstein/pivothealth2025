@@ -115,24 +115,24 @@ export function JourneyMap({ onIntakeClick }: JourneyMapProps) {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <g
-                      className="cursor-pointer transform transition-transform hover:scale-105"
+                      className="cursor-pointer transition-colors duration-200"
                       onMouseEnter={() => setHoveredStage(stage.id)}
                       onMouseLeave={() => setHoveredStage(null)}
                       onClick={() => handleStageClick(stage)}
                     >
-                      {/* Larger circle with border */}
+                      {/* Circle with border */}
                       <circle
                         cx={x}
                         cy={y}
                         r="18"
                         className={cn(
-                          "fill-white stroke-2 transition-all duration-200",
+                          "fill-white stroke-2 transition-colors duration-200",
                           hoveredStage === stage.id ? "stroke-blue-500" : "stroke-gray-300"
                         )}
                         strokeWidth="2"
                       />
 
-                      {/* Inner colored circle */}
+                      {/* Inner circle */}
                       <circle
                         cx={x}
                         cy={y}
