@@ -94,9 +94,7 @@ export function JourneyMap({ onIntakeClick }: JourneyMapProps) {
         >
           {/* More pronounced S-shaped path */}
           <path
-            d="M 50,100 
-               C 150,50 200,150 300,100 
-               S 450,50 550,100"
+            d="M 50,100 C 150,25 250,175 300,100 S 450,175 550,100"
             className="stroke-blue-200"
             strokeWidth="4"
             strokeDasharray="8 4"
@@ -109,9 +107,8 @@ export function JourneyMap({ onIntakeClick }: JourneyMapProps) {
             const progress = index / (currentStages.length - 1);
             const x = 50 + progress * 500;
 
-            // Calculate y position based on the S curve
-            // Adjusted amplitude and phase to match the new curve
-            const y = 100 + Math.sin(progress * Math.PI * 2) * 25;
+            // Calculate y position based on the new, more dramatic S curve
+            const y = 100 + Math.sin(progress * Math.PI * 2) * 50; //Increased amplitude
 
             return (
               <TooltipProvider key={stage.id}>
