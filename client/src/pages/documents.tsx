@@ -69,7 +69,8 @@ export default function Documents() {
       });
 
       if (!response.ok) {
-        throw new Error('Upload failed');
+        const errorData = await response.json().catch(() => ({ error: response.statusText }));
+        throw new Error(errorData.error || 'Upload failed');
       }
 
       return response.json();
@@ -82,10 +83,10 @@ export default function Documents() {
       setSelectedFile(null);
       refetchLocal();
     },
-    onError: () => {
+    onError: (error: Error) => {
       toast({
         title: "Upload Failed",
-        description: "There was an error uploading your document.",
+        description: error.message || "There was an error uploading your document.",
         variant: "destructive",
       });
     },
@@ -98,7 +99,7 @@ export default function Documents() {
   };
 
   const handleUpload = async () => {
-    if (!selectedFile) return;
+    if (!selectedFile || !documentType) return;
 
     const formData = new FormData();
     formData.append('file', selectedFile);
@@ -174,8 +175,8 @@ export default function Documents() {
 
             <div>
               <label className="block text-sm font-medium mb-1">File</label>
-              <Input 
-                type="file" 
+              <Input
+                type="file"
                 onChange={handleFileChange}
                 accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
               />
@@ -183,7 +184,7 @@ export default function Documents() {
 
             <Button
               onClick={handleUpload}
-              disabled={!selectedFile || uploadMutation.isPending}
+              disabled={!selectedFile || !documentType || uploadMutation.isPending}
             >
               {uploadMutation.isPending ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

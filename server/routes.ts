@@ -185,6 +185,8 @@ export function registerRoutes(app: Express): Server {
   // Document upload endpoint
   app.post("/api/documents/upload", upload.single('file'), async (req, res) => {
     try {
+      console.log('Upload request received:', req.file?.originalname);
+
       if (!req.file) {
         return res.status(400).json({ error: "No file uploaded" });
       }
@@ -192,8 +194,18 @@ export function registerRoutes(app: Express): Server {
       const { buffer, originalname, mimetype } = req.file;
       const { documentType } = req.body;
 
+      if (!documentType) {
+        return res.status(400).json({ error: "Document type is required" });
+      }
+
       // Encrypt the file buffer
       const { encryptedData, iv } = encryptBuffer(buffer);
+
+      // Store document metadata
+      const metadata = {
+        size: buffer.length,
+        lastModified: new Date().toISOString(),
+      };
 
       const [document] = await db
         .insert(patientDocuments)
@@ -201,16 +213,14 @@ export function registerRoutes(app: Express): Server {
           patientId: 1, // TODO: Get from auth
           filename: originalname,
           contentType: mimetype,
+          documentType,
           encryptedData: encryptedData.toString('base64'),
           encryptionIV: iv.toString('base64'),
-          documentType,
-          metadata: {
-            size: buffer.length,
-            lastModified: new Date().toISOString(),
-          },
+          metadata,
         })
         .returning();
 
+      console.log('Document uploaded successfully:', document.id);
       res.json(document);
     } catch (error) {
       console.error('Upload error:', error);
