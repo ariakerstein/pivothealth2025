@@ -227,7 +227,7 @@ export function registerRoutes(app: Express): Server {
         .orderBy(patientDocuments.uploadedAt);
 
       // Don't send the encrypted data in the list
-      const sanitizedDocs = documents.map(({ encryptedData, encryptionIV, ...doc }) => doc);
+      const sanitizedDocs = documents.map(({ encryptedData, encryptionIV,  ...doc }) => doc);
       res.json(sanitizedDocs);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch documents" });
