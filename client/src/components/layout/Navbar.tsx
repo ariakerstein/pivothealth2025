@@ -78,9 +78,11 @@ export default function Navbar() {
             <NavigationMenu>
               <NavigationMenuList>
                 <NavigationMenuItem>
-                  <NavigationMenuTrigger>
-                    Community
-                  </NavigationMenuTrigger>
+                  <Link href="/community">
+                    <NavigationMenuTrigger>
+                      Community
+                    </NavigationMenuTrigger>
+                  </Link>
                   <NavigationMenuContent>
                     <ul className="grid w-[200px] gap-2 p-4">
                       {communityItems.map((item) => (
@@ -136,9 +138,9 @@ export default function Navbar() {
 
                 {/* Mobile Community Section */}
                 <div className="pt-2">
-                  <div className="px-2 py-1 text-sm font-semibold text-foreground/70">
+                  <Link href="/community" className="block px-2 py-1 text-lg transition-colors hover:text-foreground/80">
                     Community
-                  </div>
+                  </Link>
                   {communityItems.map((item) => (
                     <Link
                       key={item.href}
