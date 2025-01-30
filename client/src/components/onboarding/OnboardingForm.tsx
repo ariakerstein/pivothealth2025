@@ -10,6 +10,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -189,13 +190,18 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
     }
 
     if (newAchievements.length > 0) {
-      setAchievements(prev => [...prev, ...newAchievements]);
+      setAchievements((prev) => [...prev, ...newAchievements]);
     }
   }, [step]);
 
-  const nextStep = async () => {
-    // Remove validation requirement for now
-    setStep((s) => Math.min(s + 1, FORM_STEPS.length - 1));
+  const nextStep = () => {
+    if (step === FORM_STEPS.length - 1) {
+      // On last step, submit the form
+      form.handleSubmit((data) => mutation.mutate(data))();
+    } else {
+      // Move to next step
+      setStep((s) => s + 1);
+    }
   };
 
   const previousStep = () => {
@@ -205,9 +211,11 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
   // Handle keyboard navigation
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      if (e.key === "Enter" && !e.shiftKey) {
+      if (e.key === "Enter" && !e.shiftKey && !e.isComposing) {
+        e.preventDefault(); // Prevent default form submission
         nextStep();
       } else if (e.key === "Backspace" && e.altKey) {
+        e.preventDefault();
         previousStep();
       }
     };
@@ -243,7 +251,7 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
 
   return (
     <Form {...form}>
-      <form className="space-y-8">
+      <form className="space-y-8" onSubmit={(e) => e.preventDefault()}>
         <TypeFormQuestion
           question={FORM_STEPS[step].title}
           description={FORM_STEPS[step].description}
