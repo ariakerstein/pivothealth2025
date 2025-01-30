@@ -6,7 +6,9 @@ import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Upload, FileText, Heart, UserCog, ClipboardCheck } from "lucide-react";
-import { JourneyMap } from "@/components/health-journey/JourneyMap";
+import { 
+  JourneyMap 
+} from "@/components/health-journey/JourneyMap";
 import { 
   Dialog, 
   DialogContent, 
@@ -52,7 +54,7 @@ export default function Home() {
           <Button
             size="lg"
             onClick={() => setShowOnboarding(true)}
-            className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 gap-2 animate-pulse"
+            className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 gap-2"
           >
             <ClipboardCheck className="h-5 w-5" />
             Start Your Health Journey
