@@ -21,6 +21,7 @@ import { TypeFormQuestion } from "./TypeFormQuestion";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { useLocation } from "wouter";
+import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
   // Demographics
@@ -116,6 +117,7 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
   const [step, setStep] = useState(0);
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -166,14 +168,25 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
         body: JSON.stringify(data),
       });
       if (!response.ok) {
-        throw new Error('Failed to save profile');
+        throw new Error("Failed to save profile");
       }
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/patient/profile'] });
+      queryClient.invalidateQueries({ queryKey: ["/api/patient/profile"] });
+      toast({
+        title: "Profile Saved",
+        description: "Your health information has been saved successfully."
+      });
       onComplete();
-      setLocation("/");
+      setLocation("/documents");
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to save profile. Please try again.",
+        variant: "destructive",
+      });
     },
   });
 
@@ -186,11 +199,7 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
       const isValid = await form.trigger();
       if (isValid) {
         const formData = form.getValues();
-        try {
-          await mutation.mutateAsync(formData);
-        } catch (error) {
-          console.error('Failed to submit form:', error);
-        }
+        await mutation.mutateAsync(formData);
       }
     } else {
       // Intermediate steps - validate and proceed
@@ -203,7 +212,7 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
   };
 
   const previousStep = () => {
-    setStep((s) => Math.max(s - 1, 0));
+    setStep((s) => Math.max(0, s - 1));
   };
 
   useEffect(() => {
@@ -211,9 +220,6 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
       if (e.key === "Enter" && !e.shiftKey && !e.isComposing) {
         e.preventDefault();
         handleSubmit(e as unknown as React.FormEvent);
-      } else if (e.key === "Backspace" && e.altKey) {
-        e.preventDefault();
-        previousStep();
       }
     };
 
@@ -234,7 +240,7 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="space-y-8">
         <TypeFormQuestion
           question={FORM_STEPS[step].title}
           description={FORM_STEPS[step].description}
