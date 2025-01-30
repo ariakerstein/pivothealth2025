@@ -92,12 +92,11 @@ export function JourneyMap({ onIntakeClick }: JourneyMapProps) {
           xmlns="http://www.w3.org/2000/svg"
           className="overflow-visible"
         >
-          {/* Snake-like curved path */}
+          {/* Adjusted path to be more balanced */}
           <path
             d="M 50,100 
-               Q 150,50 300,150 
-               T 450,50 
-               T 550,100"
+               C 150,100 200,50 300,100 
+               S 450,150 550,100"
             className="stroke-blue-200"
             strokeWidth="4"
             strokeDasharray="8 4"
@@ -109,8 +108,9 @@ export function JourneyMap({ onIntakeClick }: JourneyMapProps) {
             // Calculate position along the curved path
             const progress = index / (currentStages.length - 1);
             const x = 50 + progress * 500;
-            // Calculate y position based on the snake-like curve
-            const y = 100 + Math.sin(progress * Math.PI * 2) * 50;
+
+            // Adjusted y-position calculation for smoother curve
+            const y = 100 + Math.sin(progress * Math.PI) * 40;
 
             return (
               <TooltipProvider key={stage.id}>
