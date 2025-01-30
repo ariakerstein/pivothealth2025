@@ -92,11 +92,11 @@ export function JourneyMap({ onIntakeClick }: JourneyMapProps) {
           xmlns="http://www.w3.org/2000/svg"
           className="overflow-visible"
         >
-          {/* Adjusted path to be more balanced */}
+          {/* More pronounced S-shaped path */}
           <path
             d="M 50,100 
-               C 150,100 200,50 300,100 
-               S 450,150 550,100"
+               C 150,50 200,150 300,100 
+               S 450,50 550,100"
             className="stroke-blue-200"
             strokeWidth="4"
             strokeDasharray="8 4"
@@ -109,8 +109,9 @@ export function JourneyMap({ onIntakeClick }: JourneyMapProps) {
             const progress = index / (currentStages.length - 1);
             const x = 50 + progress * 500;
 
-            // Adjusted y-position calculation for smoother curve
-            const y = 100 + Math.sin(progress * Math.PI) * 40;
+            // Calculate y position based on the S curve
+            // Adjusted amplitude and phase to match the new curve
+            const y = 100 + Math.sin(progress * Math.PI * 2) * 25;
 
             return (
               <TooltipProvider key={stage.id}>
@@ -122,27 +123,15 @@ export function JourneyMap({ onIntakeClick }: JourneyMapProps) {
                       onMouseLeave={() => setHoveredStage(null)}
                       onClick={() => handleStageClick(stage)}
                     >
-                      {/* Glowing effect for current stage */}
-                      {stage.status === 'current' && (
-                        <circle
-                          cx={x}
-                          cy={y}
-                          r="24"
-                          className="fill-blue-500/20 animate-pulse"
-                        />
-                      )}
-
                       {/* Larger circle with border */}
                       <circle
                         cx={x}
                         cy={y}
                         r="18"
-                        className="fill-white stroke-2"
-                        stroke={
-                          stage.status === 'completed' ? '#22c55e' :
-                          stage.status === 'current' ? '#3b82f6' :
-                          '#d1d5db'
-                        }
+                        className={cn(
+                          "fill-white stroke-2 transition-all duration-200",
+                          hoveredStage === stage.id ? "stroke-blue-500" : "stroke-gray-300"
+                        )}
                         strokeWidth="2"
                       />
 
@@ -152,10 +141,12 @@ export function JourneyMap({ onIntakeClick }: JourneyMapProps) {
                         cy={y}
                         r="14"
                         className={cn(
-                          stage.status === 'completed' ? 'fill-green-500' :
-                          stage.status === 'current' ? 'fill-blue-500' :
-                          'fill-gray-300',
-                          'transition-colors duration-200'
+                          "transition-colors duration-200",
+                          hoveredStage === stage.id
+                            ? "fill-blue-500"
+                            : stage.status === 'completed'
+                            ? 'fill-green-500'
+                            : 'fill-gray-300'
                         )}
                       />
 
@@ -176,8 +167,10 @@ export function JourneyMap({ onIntakeClick }: JourneyMapProps) {
                         y={y + 28}
                         textAnchor="middle"
                         className={cn(
-                          "fill-gray-700 text-[10px] font-medium",
-                          hoveredStage === stage.id && "fill-blue-600 font-bold"
+                          "text-[10px] font-medium transition-colors duration-200",
+                          hoveredStage === stage.id
+                            ? "fill-blue-600 font-bold"
+                            : "fill-gray-700"
                         )}
                       >
                         {stage.title}
