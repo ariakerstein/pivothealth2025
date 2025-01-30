@@ -13,6 +13,7 @@ import LandingPage from "@/pages/landing";
 import AuthPage from "@/pages/auth-page";
 import Community from "@/pages/community";
 import Mentor from "@/pages/mentor";
+import EpicCallback from "@/pages/epic-callback";
 import { useUser } from "@/hooks/use-user";
 import { Loader2 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
@@ -59,6 +60,7 @@ function Router() {
         {/* Public routes */}
         <Route path="/" component={user ? () => <ProtectedRoute component={Home} /> : LandingPage} />
         <Route path="/auth" component={user ? () => { window.location.href = '/'; return null; } : AuthPage} />
+        <Route path="/epic-callback" component={EpicCallback} />
 
         {/* Protected routes */}
         <Route path="/home" component={() => <ProtectedRoute component={Home} />} />
