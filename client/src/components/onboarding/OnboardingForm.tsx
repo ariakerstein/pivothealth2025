@@ -159,12 +159,17 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
   });
 
   const mutation = useMutation({
-    mutationFn: (data: FormData) =>
-      fetch("/api/patient/onboarding", {
+    mutationFn: async (data: FormData) => {
+      const response = await fetch("/api/patient/onboarding", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
-      }).then((res) => res.json()),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to save profile');
+      }
+      return response.json();
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/patient/profile'] });
       onComplete();
@@ -179,7 +184,11 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
       const isValid = await form.trigger();
       if (isValid) {
         const formData = form.getValues();
-        mutation.mutate(formData);
+        try {
+          await mutation.mutateAsync(formData);
+        } catch (error) {
+          console.error('Failed to submit form:', error);
+        }
       }
     } else {
       const currentFields = FORM_STEPS[step].fields as Array<keyof FormData>;
@@ -222,7 +231,10 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
 
   return (
     <Form {...form}>
-      <form className="space-y-8" onSubmit={(e) => e.preventDefault()}>
+      <form onSubmit={(e) => {
+        e.preventDefault();
+        nextStep();
+      }}>
         <TypeFormQuestion
           question={FORM_STEPS[step].title}
           description={FORM_STEPS[step].description}
