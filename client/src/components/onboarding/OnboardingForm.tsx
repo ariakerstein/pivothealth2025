@@ -81,32 +81,32 @@ interface OnboardingFormProps {
 const FORM_STEPS = [
   {
     title: "Personal Information",
-    description: "Basic demographic and contact information",
+    description: "Welcome! Let's start by getting to know you better. We'll collect some basic information to help us provide the best possible care.",
     fields: ["name", "dateOfBirth", "gender", "email", "phone", "insuranceProvider", "insuranceNumber"],
   },
   {
     title: "Medical History",
-    description: "Previous conditions and current medications",
+    description: "Now, let's talk about your medical background. This information helps us understand your journey and provide personalized support.",
     fields: ["previousConditions", "surgeryHistory", "currentMedications", "allergies"],
   },
   {
     title: "Cancer Details",
-    description: "Specific information about your cancer diagnosis",
+    description: "You're doing great! Let's discuss the specifics of your diagnosis. This helps us tailor our support to your unique situation.",
     fields: ["cancerType", "cancerStage", "diagnosisDate", "biopsyResults", "previousTreatments", "currentTreatmentPlan"],
   },
   {
     title: "Symptoms & Well-being",
-    description: "Current symptoms and their severity",
+    description: "Understanding how you're feeling is crucial. Let's talk about any symptoms you're experiencing to better support your daily life.",
     fields: ["painLevel", "painLocation", "fatigue", "weightChanges", "weightChangeAmount", "otherSymptoms"],
   },
   {
     title: "Family & Lifestyle",
-    description: "Family history and lifestyle factors",
+    description: "Almost there! Now let's learn about your family history and lifestyle. This information helps us provide more comprehensive care.",
     fields: ["familyCancerHistory", "geneticTesting", "geneticTestingDetails", "smokingStatus", "alcoholConsumption", "exerciseFrequency", "dietaryRestrictions"],
   },
   {
     title: "Support & Goals",
-    description: "Your support system and treatment goals",
+    description: "Finally, let's discuss your support system and goals. This helps us understand how we can best assist you on your journey.",
     fields: ["emotionalState", "supportSystem", "workConcerns", "treatmentGoals", "primaryConcerns"],
   },
 ];
