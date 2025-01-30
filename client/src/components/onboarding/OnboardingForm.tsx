@@ -179,8 +179,10 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
 
   const progress = ((step + 1) / FORM_STEPS.length) * 100;
 
-  const nextStep = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     if (step === FORM_STEPS.length - 1) {
+      // Final step - validate and submit
       const isValid = await form.trigger();
       if (isValid) {
         const formData = form.getValues();
@@ -191,6 +193,7 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
         }
       }
     } else {
+      // Intermediate steps - validate and proceed
       const currentFields = FORM_STEPS[step].fields as Array<keyof FormData>;
       const isValid = await form.trigger(currentFields);
       if (isValid) {
@@ -207,7 +210,7 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.key === "Enter" && !e.shiftKey && !e.isComposing) {
         e.preventDefault();
-        nextStep();
+        handleSubmit(e as unknown as React.FormEvent);
       } else if (e.key === "Backspace" && e.altKey) {
         e.preventDefault();
         previousStep();
@@ -231,14 +234,11 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={(e) => {
-        e.preventDefault();
-        nextStep();
-      }}>
+      <form onSubmit={handleSubmit}>
         <TypeFormQuestion
           question={FORM_STEPS[step].title}
           description={FORM_STEPS[step].description}
-          onNext={nextStep}
+          onNext={handleSubmit}
           onPrev={previousStep}
           isFirst={step === 0}
           isLast={step === FORM_STEPS.length - 1}
@@ -266,7 +266,7 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
                           onKeyDown={(e) => {
                             if (e.key === "Enter") {
                               e.preventDefault();
-                              nextStep();
+                              handleSubmit(e as unknown as React.FormEvent);
                             }
                           }}
                         />
