@@ -1,7 +1,6 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Loader2, FileText, Upload, Link as LinkIcon } from "lucide-react";
@@ -21,7 +20,7 @@ interface Document {
   contentType: string;
   documentType: string;
   uploadedAt: string;
-  source?: string; // Added for EPIC integration
+  source?: string;
   metadata: {
     size: number;
     lastModified: string;
@@ -33,6 +32,7 @@ export default function Documents() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [documentType, setDocumentType] = useState<string>("medical_record");
   const [showEHRWizard, setShowEHRWizard] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   // Fetch local documents
@@ -96,6 +96,18 @@ export default function Documents() {
     if (e.target.files && e.target.files[0]) {
       setSelectedFile(e.target.files[0]);
     }
+  };
+
+  const handleUploadClick = () => {
+    if (!documentType) {
+      toast({
+        title: "Document Type Required",
+        description: "Please select a document type before uploading.",
+        variant: "destructive",
+      });
+      return;
+    }
+    fileInputRef.current?.click();
   };
 
   const handleUpload = async () => {
@@ -173,26 +185,46 @@ export default function Documents() {
               </Select>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-1">File</label>
-              <Input
-                type="file"
-                onChange={handleFileChange}
-                accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
-              />
-            </div>
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              className="hidden"
+              accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+            />
 
-            <Button
-              onClick={handleUpload}
-              disabled={!selectedFile || !documentType || uploadMutation.isPending}
-            >
-              {uploadMutation.isPending ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Upload className="mr-2 h-4 w-4" />
+            <div className="flex gap-4 items-center">
+              <Button
+                onClick={selectedFile ? handleUpload : handleUploadClick}
+                disabled={uploadMutation.isPending}
+                className="w-full"
+              >
+                {uploadMutation.isPending ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Uploading...
+                  </>
+                ) : selectedFile ? (
+                  <>
+                    <Upload className="mr-2 h-4 w-4" />
+                    Upload {selectedFile.name}
+                  </>
+                ) : (
+                  <>
+                    <Upload className="mr-2 h-4 w-4" />
+                    Choose File
+                  </>
+                )}
+              </Button>
+              {selectedFile && (
+                <Button
+                  variant="outline"
+                  onClick={() => setSelectedFile(null)}
+                >
+                  Clear
+                </Button>
               )}
-              Upload Document
-            </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
