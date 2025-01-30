@@ -7,7 +7,7 @@ import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Upload, FileText, Heart, UserCog, ClipboardCheck } from "lucide-react";
 import { JourneyMap } from "@/components/health-journey/JourneyMap";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 export default function Home() {
   const { toast } = useToast();
@@ -137,6 +137,9 @@ export default function Home() {
       {/* Typeform-style Dialog */}
       <Dialog open={showOnboarding} onOpenChange={setShowOnboarding}>
         <DialogContent className="max-w-4xl">
+          <DialogHeader>
+            <DialogTitle>Health Profile</DialogTitle>
+          </DialogHeader>
           <OnboardingForm onComplete={() => {
             setShowOnboarding(false);
             toast({

@@ -59,17 +59,15 @@ export function JourneyMap() {
   const [, navigate] = useLocation();
 
   return (
-    <div className="w-full">
+    <div className="w-full py-8">
       <div className="max-w-[600px] mx-auto relative">
-        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4">
-          Start Intake
-        </button>
         <svg
           width="100%"
           height="200"
           viewBox="0 0 600 200"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
+          className="overflow-visible"
         >
           {/* Snake-like curved path */}
           <path
@@ -80,6 +78,7 @@ export function JourneyMap() {
             className="stroke-blue-200"
             strokeWidth="4"
             strokeDasharray="8 4"
+            fill="none"
           />
 
           {/* Stages positioned along the path */}
