@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -17,11 +16,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { TypeFormQuestion } from "./TypeFormQuestion";
 import { motion } from "framer-motion";
-import { Loader2, Trophy } from "lucide-react";
-import { Link, useLocation } from "wouter";
+import { Loader2 } from "lucide-react";
+import { useLocation } from "wouter";
 
 const formSchema = z.object({
   // Demographics
@@ -98,7 +97,7 @@ const FORM_STEPS = [
   },
   {
     title: "Symptoms & Well-being",
-    description: "Understanding how you're feeling is crucial. Let's talk about any symptoms you're experiencing to better support your daily life.",
+    description: "Understanding how you're feelingis crucial. Let's talk about any symptoms you're experiencing to better support your daily life.",
     fields: ["painLevel", "painLocation", "fatigue", "weightChanges", "weightChangeAmount", "otherSymptoms"],
   },
   {
@@ -116,6 +115,7 @@ const FORM_STEPS = [
 export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
   const [step, setStep] = useState(0);
   const [, setLocation] = useLocation();
+  const queryClient = useQueryClient();
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -166,6 +166,7 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
         body: JSON.stringify(data),
       }).then((res) => res.json()),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/patient/profile'] });
       onComplete();
       setLocation("/");
     },
@@ -175,15 +176,13 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
 
   const nextStep = async () => {
     if (step === FORM_STEPS.length - 1) {
-      // On last step, validate all fields before submitting
       const isValid = await form.trigger();
       if (isValid) {
         const formData = form.getValues();
         mutation.mutate(formData);
       }
     } else {
-      // On intermediate steps, validate current step's fields before proceeding
-      const currentFields = FORM_STEPS[step].fields;
+      const currentFields = FORM_STEPS[step].fields as Array<keyof FormData>;
       const isValid = await form.trigger(currentFields);
       if (isValid) {
         setStep((s) => s + 1);
