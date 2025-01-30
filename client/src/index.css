@@ -30,11 +30,15 @@
   }
 
   .typeform-progress {
-    @apply fixed top-0 left-0 w-full h-1 bg-muted;
+    @apply fixed top-0 left-0 w-full h-2 bg-muted;
   }
 
   .typeform-progress-bar {
     @apply h-full bg-primary transition-all duration-300 ease-out;
+  }
+
+  .typeform-step-count {
+    @apply absolute -bottom-8 left-4 text-sm font-medium text-muted-foreground;
   }
 
   .typeform-navigation {

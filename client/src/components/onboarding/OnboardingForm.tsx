@@ -194,15 +194,8 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
   }, [step]);
 
   const nextStep = async () => {
-    const fields = FORM_STEPS[step].fields as Array<keyof FormData>;
-    const result = await form.trigger(fields);
-    if (result) {
-      if (step === FORM_STEPS.length - 1) {
-        form.handleSubmit((data) => mutation.mutate(data))();
-      } else {
-        setStep((s) => Math.min(s + 1, FORM_STEPS.length - 1));
-      }
-    }
+    // Remove validation requirement for now
+    setStep((s) => Math.min(s + 1, FORM_STEPS.length - 1));
   };
 
   const previousStep = () => {
@@ -259,6 +252,8 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
           isFirst={step === 0}
           isLast={step === FORM_STEPS.length - 1}
           progress={progress}
+          currentStep={step + 1}
+          totalSteps={FORM_STEPS.length}
         >
           <div className="space-y-6">
             {step === 0 && (
