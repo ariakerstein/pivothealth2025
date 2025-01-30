@@ -9,8 +9,11 @@ import { useToast } from "@/hooks/use-toast";
 import {
   Dialog,
   DialogContent,
+  DialogTitle,
 } from "@/components/ui/dialog";
+import { fetchEpicDocuments } from "@/lib/epic-client";
 import EHRWizard from "@/components/ehr/EHRWizard";
+import { Badge } from "@/components/ui/badge";
 
 interface Document {
   id: number;
@@ -18,6 +21,7 @@ interface Document {
   contentType: string;
   documentType: string;
   uploadedAt: string;
+  source?: string; // Added for EPIC integration
   metadata: {
     size: number;
     lastModified: string;
@@ -31,16 +35,31 @@ export default function Documents() {
   const [showEHRWizard, setShowEHRWizard] = useState(false);
   const { toast } = useToast();
 
-  const { data: documents, isLoading, refetch } = useQuery<Document[]>({
+  // Fetch local documents
+  const { data: localDocuments, isLoading: loadingLocal, refetch: refetchLocal } = useQuery<Document[]>({
     queryKey: ['/api/documents'],
     queryFn: async () => {
       const response = await fetch('/api/documents');
       if (!response.ok) {
-        throw new Error('Failed to fetch documents');
+        throw new Error('Failed to fetch local documents');
       }
       return response.json();
     }
   });
+
+  // Fetch EPIC documents
+  const { data: epicDocuments, isLoading: loadingEpic } = useQuery({
+    queryKey: ['epic-documents'],
+    queryFn: fetchEpicDocuments,
+    // Disable by default until connected
+    enabled: false,
+  });
+
+  // Combine local and EPIC documents
+  const documents = [
+    ...(localDocuments || []).map(doc => ({ ...doc, source: 'Local' })),
+    ...(epicDocuments || [])
+  ];
 
   const uploadMutation = useMutation({
     mutationFn: async (formData: FormData) => {
@@ -61,7 +80,7 @@ export default function Documents() {
         description: "Your document has been securely uploaded and encrypted.",
       });
       setSelectedFile(null);
-      refetch();
+      refetchLocal();
     },
     onError: () => {
       toast({
@@ -107,20 +126,16 @@ export default function Documents() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <LinkIcon className="h-5 w-5" />
-            Connect with Your Healthcare Provider
+            Connect with EPIC
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-muted-foreground">
-            Securely connect with your healthcare provider's Electronic Health Record (EHR) system 
-            to automatically import your medical documents and records.
+            Connect with EPIC sandbox to test importing your medical documents and records.
           </p>
           <div className="flex gap-4">
             <Button onClick={handleEHRConnect} className="bg-blue-600 hover:bg-blue-700">
-              Connect to Provider EHR
-            </Button>
-            <Button variant="outline" onClick={handleEHRConnect}>
-              Learn More
+              Connect to EPIC Sandbox
             </Button>
           </div>
         </CardContent>
@@ -129,6 +144,7 @@ export default function Documents() {
       {/* EHR Connection Wizard */}
       <Dialog open={showEHRWizard} onOpenChange={setShowEHRWizard}>
         <DialogContent className="max-w-4xl">
+          <DialogTitle>Connect to EPIC Sandbox</DialogTitle>
           <EHRWizard onClose={() => setShowEHRWizard(false)} />
         </DialogContent>
       </Dialog>
@@ -185,7 +201,7 @@ export default function Documents() {
           <CardTitle>My Documents</CardTitle>
         </CardHeader>
         <CardContent>
-          {isLoading ? (
+          {loadingLocal || loadingEpic ? (
             <div className="flex justify-center py-8">
               <Loader2 className="h-8 w-8 animate-spin" />
             </div>
@@ -195,20 +211,28 @@ export default function Documents() {
             </p>
           ) : (
             <div className="space-y-4">
-              {documents?.map((doc) => (
+              {documents?.map((doc: any) => (
                 <Card key={doc.id}>
                   <CardContent className="flex items-center justify-between p-4">
                     <div className="flex items-center">
                       <FileText className="h-8 w-8 text-blue-500 mr-4" />
                       <div>
                         <h3 className="font-medium">{doc.filename}</h3>
-                        <p className="text-sm text-muted-foreground">
-                          {new Date(doc.uploadedAt).toLocaleDateString()} • {formatBytes(doc.metadata.size)}
-                        </p>
+                        <div className="flex items-center gap-2">
+                          <p className="text-sm text-muted-foreground">
+                            {new Date(doc.uploadedAt).toLocaleDateString()}
+                            {doc.metadata?.size && ` • ${formatBytes(doc.metadata.size)}`}
+                          </p>
+                          {doc.source && (
+                            <Badge variant="outline" className="text-xs">
+                              {doc.source}
+                            </Badge>
+                          )}
+                        </div>
                       </div>
                     </div>
                     <Button variant="outline" asChild>
-                      <a href={`/api/documents/${doc.id}`} target="_blank" rel="noopener">
+                      <a href={doc.source === 'EPIC Sandbox' ? `/api/epic/documents/${doc.id}` : `/api/documents/${doc.id}`} target="_blank" rel="noopener">
                         View
                       </a>
                     </Button>

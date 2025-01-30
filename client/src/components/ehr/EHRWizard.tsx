@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { 
   Select, 
   SelectContent, 
@@ -11,11 +10,9 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { 
-  Building2, 
   CheckCircle2, 
   ChevronRight, 
   Hospital, 
-  KeyRound, 
   ShieldCheck 
 } from "lucide-react";
 
@@ -28,22 +25,12 @@ interface WizardStep {
 const WIZARD_STEPS: WizardStep[] = [
   {
     title: "Select Healthcare Provider",
-    description: "Choose your healthcare provider that uses EPIC EHR system",
+    description: "Choose your healthcare provider to access your medical records",
     icon: <Hospital className="h-6 w-6" />,
   },
   {
-    title: "Provider Details",
-    description: "Enter your provider's EPIC system details",
-    icon: <Building2 className="h-6 w-6" />,
-  },
-  {
-    title: "Authentication",
-    description: "Securely authenticate with your provider's EPIC system",
-    icon: <KeyRound className="h-6 w-6" />,
-  },
-  {
     title: "Review & Consent",
-    description: "Review the connection details and provide consent",
+    description: "Review what information will be shared",
     icon: <ShieldCheck className="h-6 w-6" />,
   },
 ];
@@ -63,8 +50,8 @@ export default function EHRWizard({ onClose }: Props) {
     } else {
       // Handle final submission
       toast({
-        title: "Integration Started",
-        description: "We're setting up your EPIC EHR integration. You'll be notified once it's complete.",
+        title: "Connecting to Provider",
+        description: "You'll be redirected to your provider's login page.",
       });
       onClose();
     }
@@ -80,56 +67,47 @@ export default function EHRWizard({ onClose }: Props) {
                 <SelectValue placeholder="Select your healthcare provider" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="ucsf">UCSF Medical Center</SelectItem>
-                <SelectItem value="stanford">Stanford Health Care</SelectItem>
-                <SelectItem value="kaiser">Kaiser Permanente</SelectItem>
-                <SelectItem value="other">Other</SelectItem>
+                <SelectItem value="dana-farber">Dana-Farber Cancer Institute</SelectItem>
+                <SelectItem value="mskcc">Memorial Sloan Kettering</SelectItem>
+                <SelectItem value="mdanderson">MD Anderson Cancer Center</SelectItem>
+                <SelectItem value="other">Other Provider</SelectItem>
               </SelectContent>
             </Select>
-            {provider === "other" && (
-              <Input 
-                placeholder="Enter your provider's name" 
-                className="mt-2"
-              />
-            )}
+            <p className="text-sm text-muted-foreground mt-2">
+              Note: Currently using EPIC sandbox for testing. Your actual medical records will not be accessed.
+            </p>
           </div>
         );
       case 1:
         return (
           <div className="space-y-4">
-            <Input placeholder="EPIC System URL" />
-            <Input placeholder="Organization ID" />
-          </div>
-        );
-      case 2:
-        return (
-          <div className="space-y-4">
-            <Input placeholder="Username/Email" />
-            <Input type="password" placeholder="Password" />
-          </div>
-        );
-      case 3:
-        return (
-          <div className="space-y-4">
             <div className="rounded-lg border p-4">
-              <h4 className="font-medium mb-2">Data Access Consent</h4>
-              <p className="text-sm text-muted-foreground">
-                By proceeding, you agree to allow Pivot Health to:
+              <h4 className="font-medium mb-2">What You're Agreeing To</h4>
+              <p className="text-sm text-muted-foreground mb-4">
+                By connecting your medical records, you'll allow Pivot Health to:
               </p>
-              <ul className="text-sm text-muted-foreground mt-2 space-y-1">
+              <ul className="text-sm text-muted-foreground space-y-3">
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="h-4 w-4 text-green-500" />
-                  Access your medical records
+                  View your medical records and test results
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="h-4 w-4 text-green-500" />
-                  Import your health documents
+                  Download important health documents
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="h-4 w-4 text-green-500" />
-                  Sync future records automatically
+                  Keep your health information up to date automatically
                 </li>
               </ul>
+              <div className="mt-4 text-sm text-muted-foreground">
+                <p>Your privacy is important:</p>
+                <ul className="list-disc ml-4 mt-2 space-y-1">
+                  <li>We never share your data without your permission</li>
+                  <li>You can disconnect at any time</li>
+                  <li>All data is encrypted and secure</li>
+                </ul>
+              </div>
             </div>
           </div>
         );
@@ -165,7 +143,7 @@ export default function EHRWizard({ onClose }: Props) {
             disabled={currentStep === 0 && !provider}
           >
             {currentStep === WIZARD_STEPS.length - 1 ? (
-              "Complete Setup"
+              "Connect to Provider"
             ) : (
               <>
                 Next Step
