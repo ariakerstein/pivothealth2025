@@ -21,6 +21,7 @@ import { useMutation } from "@tanstack/react-query";
 import { TypeFormQuestion } from "./TypeFormQuestion";
 import { motion } from "framer-motion";
 import { Loader2, Party, Medal, Trophy } from "lucide-react";
+import { Link, useLocation } from "wouter";
 
 const formSchema = z.object({
   // Demographics
@@ -116,6 +117,7 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
   const [step, setStep] = useState(0);
   const [showCelebration, setShowCelebration] = useState(false);
   const [achievements, setAchievements] = useState<string[]>([]);
+  const [, setLocation] = useLocation();
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -167,8 +169,10 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
       }).then((res) => res.json()),
     onSuccess: () => {
       setShowCelebration(true);
+      // Show celebration for 3 seconds, then redirect
       setTimeout(() => {
         onComplete();
+        setLocation("/"); // Redirect to homepage
       }, 3000);
     },
   });
@@ -233,9 +237,9 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
       >
         <div className="text-center space-y-4">
           <Trophy className="h-24 w-24 mx-auto text-primary animate-bounce" />
-          <h2 className="text-4xl font-bold">Profile Complete!</h2>
+          <h2 className="text-4xl font-bold">Thank You!</h2>
           <p className="text-xl text-muted-foreground">
-            Thank you for sharing your journey with us
+            We appreciate you sharing your journey with us. Together, we'll provide the best care possible.
           </p>
           <div className="flex gap-2 justify-center">
             {achievements.map((achievement, i) => (
@@ -244,6 +248,9 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
               </span>
             ))}
           </div>
+          <p className="text-sm text-muted-foreground animate-pulse">
+            Redirecting you to your personalized dashboard...
+          </p>
         </div>
       </motion.div>
     );
