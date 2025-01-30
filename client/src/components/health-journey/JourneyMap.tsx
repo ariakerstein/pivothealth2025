@@ -61,16 +61,22 @@ export function JourneyMap() {
   return (
     <div className="w-full">
       <div className="max-w-[600px] mx-auto relative">
+        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4">
+          Start Intake
+        </button>
         <svg
           width="100%"
-          height="120"
-          viewBox="0 0 600 120"
+          height="200"
+          viewBox="0 0 600 200"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          {/* Curved path */}
+          {/* Snake-like curved path */}
           <path
-            d="M 50,80 Q 150,120 300,60 T 550,80"
+            d="M 50,100 
+               Q 150,50 300,150 
+               T 450,50 
+               T 550,100"
             className="stroke-blue-200"
             strokeWidth="4"
             strokeDasharray="8 4"
@@ -81,19 +87,29 @@ export function JourneyMap() {
             // Calculate position along the curved path
             const progress = index / (stages.length - 1);
             const x = 50 + progress * 500;
-            // Calculate y position based on the curve
-            const y = 80 + Math.sin(progress * Math.PI) * -20;
+            // Calculate y position based on the snake-like curve
+            const y = 100 + Math.sin(progress * Math.PI * 2) * 50;
 
             return (
               <TooltipProvider key={stage.id}>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <g
-                      className="cursor-pointer"
+                      className="cursor-pointer transform transition-transform hover:scale-105"
                       onMouseEnter={() => setHoveredStage(stage.id)}
                       onMouseLeave={() => setHoveredStage(null)}
                       onClick={() => navigate(stage.link)}
                     >
+                      {/* Glowing effect for current stage */}
+                      {stage.status === 'current' && (
+                        <circle
+                          cx={x}
+                          cy={y}
+                          r="24"
+                          className="fill-blue-500/20 animate-pulse"
+                        />
+                      )}
+
                       {/* Larger circle with border */}
                       <circle
                         cx={x}
@@ -116,7 +132,8 @@ export function JourneyMap() {
                         className={cn(
                           stage.status === 'completed' ? 'fill-green-500' :
                           stage.status === 'current' ? 'fill-blue-500' :
-                          'fill-gray-300'
+                          'fill-gray-300',
+                          'transition-colors duration-200'
                         )}
                       />
 

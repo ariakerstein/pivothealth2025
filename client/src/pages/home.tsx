@@ -5,7 +5,7 @@ import OnboardingForm from "@/components/onboarding/OnboardingForm";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import { Upload, FileText, Heart, UserCog } from "lucide-react";
+import { Upload, FileText, Heart, UserCog, ClipboardCheck } from "lucide-react";
 import { JourneyMap } from "@/components/health-journey/JourneyMap";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 
@@ -41,6 +41,21 @@ export default function Home() {
         </div>
         <JourneyMap />
       </section>
+
+      {/* Start Intake Button */}
+      <div className="mb-8 text-center">
+        <Button
+          size="lg"
+          onClick={() => setShowOnboarding(true)}
+          className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 gap-2"
+        >
+          <ClipboardCheck className="h-5 w-5" />
+          Start Your Health Journey
+        </Button>
+        <p className="text-sm text-muted-foreground mt-2">
+          Complete your health profile to get personalized care recommendations
+        </p>
+      </div>
 
       <div className="grid lg:grid-cols-2 gap-8">
         <Card>
@@ -119,7 +134,7 @@ export default function Home() {
         </Card>
       </div>
 
-      {/* Edit Health Information Dialog */}
+      {/* Typeform-style Dialog */}
       <Dialog open={showOnboarding} onOpenChange={setShowOnboarding}>
         <DialogContent className="max-w-4xl">
           <OnboardingForm onComplete={() => {
