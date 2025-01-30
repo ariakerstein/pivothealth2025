@@ -20,7 +20,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useMutation } from "@tanstack/react-query";
 import { TypeFormQuestion } from "./TypeFormQuestion";
 import { motion } from "framer-motion";
-import { Loader2, Party, Medal, Trophy } from "lucide-react";
+import { Loader2, Trophy } from "lucide-react";
 import { Link, useLocation } from "wouter";
 
 const formSchema = z.object({
@@ -115,8 +115,6 @@ const FORM_STEPS = [
 
 export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
   const [step, setStep] = useState(0);
-  const [showCelebration, setShowCelebration] = useState(false);
-  const [achievements, setAchievements] = useState<string[]>([]);
   const [, setLocation] = useLocation();
 
   const form = useForm<FormData>({
@@ -168,42 +166,17 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
         body: JSON.stringify(data),
       }).then((res) => res.json()),
     onSuccess: () => {
-      setShowCelebration(true);
-      // Show celebration for 3 seconds, then redirect
-      setTimeout(() => {
-        onComplete();
-        setLocation("/"); // Redirect to homepage
-      }, 3000);
+      onComplete();
+      setLocation("/");
     },
   });
 
   const progress = ((step + 1) / FORM_STEPS.length) * 100;
 
-  // Achievement system
-  useEffect(() => {
-    const newAchievements: string[] = [];
-
-    if (step === 1) {
-      newAchievements.push("First Step Complete! 🎉");
-    }
-    if (step === Math.floor(FORM_STEPS.length / 2)) {
-      newAchievements.push("Halfway There! 🌟");
-    }
-    if (step === FORM_STEPS.length - 1) {
-      newAchievements.push("Almost Done! 🏃");
-    }
-
-    if (newAchievements.length > 0) {
-      setAchievements((prev) => [...prev, ...newAchievements]);
-    }
-  }, [step]);
-
   const nextStep = () => {
     if (step === FORM_STEPS.length - 1) {
-      // On last step, submit the form
       form.handleSubmit((data) => mutation.mutate(data))();
     } else {
-      // Move to next step
       setStep((s) => s + 1);
     }
   };
@@ -212,11 +185,10 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
     setStep((s) => Math.max(s - 1, 0));
   };
 
-  // Handle keyboard navigation
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.key === "Enter" && !e.shiftKey && !e.isComposing) {
-        e.preventDefault(); // Prevent default form submission
+        e.preventDefault();
         nextStep();
       } else if (e.key === "Backspace" && e.altKey) {
         e.preventDefault();
@@ -228,31 +200,14 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [step]);
 
-  if (showCelebration) {
+  if (mutation.isPending) {
     return (
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="fixed inset-0 flex items-center justify-center bg-background/95"
-      >
+      <div className="fixed inset-0 flex items-center justify-center bg-background/95">
         <div className="text-center space-y-4">
-          <Trophy className="h-24 w-24 mx-auto text-primary animate-bounce" />
-          <h2 className="text-4xl font-bold">Thank You!</h2>
-          <p className="text-xl text-muted-foreground">
-            We appreciate you sharing your journey with us. Together, we'll provide the best care possible.
-          </p>
-          <div className="flex gap-2 justify-center">
-            {achievements.map((achievement, i) => (
-              <span key={i} className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-primary/10 text-primary">
-                {achievement}
-              </span>
-            ))}
-          </div>
-          <p className="text-sm text-muted-foreground animate-pulse">
-            Redirecting you to your personalized dashboard...
-          </p>
+          <Loader2 className="h-8 w-8 animate-spin mx-auto" />
+          <p className="text-lg">Saving your information...</p>
         </div>
-      </motion.div>
+      </div>
     );
   }
 
