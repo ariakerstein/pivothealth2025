@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -10,23 +10,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useMutation } from "@tanstack/react-query";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Progress } from "@/components/ui/progress";
-import SchedulingModal from "@/components/scheduling/SchedulingModal";
+import { TypeFormQuestion } from "./TypeFormQuestion";
+import { motion } from "framer-motion";
+import { Loader2, Party, Medal, Trophy } from "lucide-react";
 
 const formSchema = z.object({
   // Demographics
@@ -120,7 +113,8 @@ const FORM_STEPS = [
 
 export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
   const [step, setStep] = useState(0);
-  const [showScheduling, setShowScheduling] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [achievements, setAchievements] = useState<string[]>([]);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -171,58 +165,130 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
         body: JSON.stringify(data),
       }).then((res) => res.json()),
     onSuccess: () => {
-      setShowScheduling(true);
-      onComplete();
+      setShowCelebration(true);
+      setTimeout(() => {
+        onComplete();
+      }, 3000);
     },
   });
 
-  const currentStep = FORM_STEPS[step];
+  const progress = ((step + 1) / FORM_STEPS.length) * 100;
+
+  // Achievement system
+  useEffect(() => {
+    const newAchievements: string[] = [];
+
+    if (step === 1) {
+      newAchievements.push("First Step Complete! 🎉");
+    }
+    if (step === Math.floor(FORM_STEPS.length / 2)) {
+      newAchievements.push("Halfway There! 🌟");
+    }
+    if (step === FORM_STEPS.length - 1) {
+      newAchievements.push("Almost Done! 🏃");
+    }
+
+    if (newAchievements.length > 0) {
+      setAchievements(prev => [...prev, ...newAchievements]);
+    }
+  }, [step]);
 
   const nextStep = async () => {
-    const fields = currentStep.fields as Array<keyof FormData>;
+    const fields = FORM_STEPS[step].fields as Array<keyof FormData>;
     const result = await form.trigger(fields);
-    if (result) setStep((s) => Math.min(s + 1, FORM_STEPS.length - 1));
+    if (result) {
+      if (step === FORM_STEPS.length - 1) {
+        form.handleSubmit((data) => mutation.mutate(data))();
+      } else {
+        setStep((s) => Math.min(s + 1, FORM_STEPS.length - 1));
+      }
+    }
   };
 
   const previousStep = () => {
     setStep((s) => Math.max(s - 1, 0));
   };
 
-  const onSubmit = (data: FormData) => {
-    mutation.mutate(data);
-  };
+  // Handle keyboard navigation
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        nextStep();
+      } else if (e.key === "Backspace" && e.altKey) {
+        previousStep();
+      }
+    };
 
-  const progress = ((step + 1) / FORM_STEPS.length) * 100;
+    window.addEventListener("keydown", handleKeyPress);
+    return () => window.removeEventListener("keydown", handleKeyPress);
+  }, [step]);
+
+  if (showCelebration) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="fixed inset-0 flex items-center justify-center bg-background/95"
+      >
+        <div className="text-center space-y-4">
+          <Trophy className="h-24 w-24 mx-auto text-primary animate-bounce" />
+          <h2 className="text-4xl font-bold">Profile Complete!</h2>
+          <p className="text-xl text-muted-foreground">
+            Thank you for sharing your journey with us
+          </p>
+          <div className="flex gap-2 justify-center">
+            {achievements.map((achievement, i) => (
+              <span key={i} className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-primary/10 text-primary">
+                {achievement}
+              </span>
+            ))}
+          </div>
+        </div>
+      </motion.div>
+    );
+  }
 
   return (
-    <div className="space-y-6">
-      <div className="space-y-2">
-        <Progress value={progress} className="w-full" />
-        <div className="flex justify-between text-sm text-muted-foreground">
-          <span>Step {step + 1} of {FORM_STEPS.length}</span>
-          <span>{currentStep.title}</span>
-        </div>
-      </div>
-
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <ScrollArea className="h-[500px] pr-4">
+    <Form {...form}>
+      <form className="space-y-8">
+        <TypeFormQuestion
+          question={FORM_STEPS[step].title}
+          description={FORM_STEPS[step].description}
+          onNext={nextStep}
+          onPrev={previousStep}
+          isFirst={step === 0}
+          isLast={step === FORM_STEPS.length - 1}
+          progress={progress}
+        >
+          <div className="space-y-6">
             {step === 0 && (
-              <div className="space-y-4">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-4"
+              >
                 <FormField
                   control={form.control}
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Full Name</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input
+                          {...field}
+                          placeholder="What's your name?"
+                          className="typeform-input"
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              nextStep();
+                            }
+                          }}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-
                 <FormField
                   control={form.control}
                   name="dateOfBirth"
@@ -236,7 +302,6 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
                     </FormItem>
                   )}
                 />
-
                 <FormField
                   control={form.control}
                   name="gender"
@@ -273,7 +338,6 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
                     </FormItem>
                   )}
                 />
-
                 <FormField
                   control={form.control}
                   name="email"
@@ -287,7 +351,6 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
                     </FormItem>
                   )}
                 />
-
                 <FormField
                   control={form.control}
                   name="phone"
@@ -301,7 +364,6 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
                     </FormItem>
                   )}
                 />
-
                 <FormField
                   control={form.control}
                   name="insuranceProvider"
@@ -315,7 +377,6 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
                     </FormItem>
                   )}
                 />
-
                 <FormField
                   control={form.control}
                   name="insuranceNumber"
@@ -329,11 +390,14 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
                     </FormItem>
                   )}
                 />
-              </div>
+              </motion.div>
             )}
-
             {step === 1 && (
-              <div className="space-y-4">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-4"
+              >
                 <FormField
                   control={form.control}
                   name="previousConditions"
@@ -350,7 +414,6 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
                     </FormItem>
                   )}
                 />
-
                 <FormField
                   control={form.control}
                   name="surgeryHistory"
@@ -367,7 +430,6 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
                     </FormItem>
                   )}
                 />
-
                 <FormField
                   control={form.control}
                   name="currentMedications"
@@ -384,7 +446,6 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
                     </FormItem>
                   )}
                 />
-
                 <FormField
                   control={form.control}
                   name="allergies"
@@ -401,11 +462,14 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
                     </FormItem>
                   )}
                 />
-              </div>
+              </motion.div>
             )}
-
             {step === 2 && (
-              <div className="space-y-4">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-4"
+              >
                 <FormField
                   control={form.control}
                   name="cancerType"
@@ -419,7 +483,6 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
                     </FormItem>
                   )}
                 />
-
                 <FormField
                   control={form.control}
                   name="cancerStage"
@@ -433,7 +496,6 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
                     </FormItem>
                   )}
                 />
-
                 <FormField
                   control={form.control}
                   name="diagnosisDate"
@@ -447,7 +509,6 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
                     </FormItem>
                   )}
                 />
-
                 <FormField
                   control={form.control}
                   name="biopsyResults"
@@ -461,7 +522,6 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
                     </FormItem>
                   )}
                 />
-
                 <FormField
                   control={form.control}
                   name="previousTreatments"
@@ -478,7 +538,6 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
                     </FormItem>
                   )}
                 />
-
                 <FormField
                   control={form.control}
                   name="currentTreatmentPlan"
@@ -492,11 +551,14 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
                     </FormItem>
                   )}
                 />
-              </div>
+              </motion.div>
             )}
-
             {step === 3 && (
-              <div className="space-y-4">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-4"
+              >
                 <FormField
                   control={form.control}
                   name="painLevel"
@@ -525,7 +587,6 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
                     </FormItem>
                   )}
                 />
-
                 <FormField
                   control={form.control}
                   name="painLocation"
@@ -539,7 +600,6 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
                     </FormItem>
                   )}
                 />
-
                 <FormField
                   control={form.control}
                   name="fatigue"
@@ -568,7 +628,6 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
                     </FormItem>
                   )}
                 />
-
                 <FormField
                   control={form.control}
                   name="weightChanges"
@@ -591,7 +650,6 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
                     </FormItem>
                   )}
                 />
-
                 {form.watch("weightChanges") && (
                   <FormField
                     control={form.control}
@@ -607,7 +665,6 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
                     )}
                   />
                 )}
-
                 <FormField
                   control={form.control}
                   name="otherSymptoms"
@@ -624,11 +681,14 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
                     </FormItem>
                   )}
                 />
-              </div>
+              </motion.div>
             )}
-
             {step === 4 && (
-              <div className="space-y-4">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-4"
+              >
                 <FormField
                   control={form.control}
                   name="familyCancerHistory"
@@ -645,7 +705,6 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
                     </FormItem>
                   )}
                 />
-
                 <FormField
                   control={form.control}
                   name="geneticTesting"
@@ -668,7 +727,6 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
                     </FormItem>
                   )}
                 />
-
                 {form.watch("geneticTesting") && (
                   <FormField
                     control={form.control}
@@ -684,7 +742,6 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
                     )}
                   />
                 )}
-
                 <FormField
                   control={form.control}
                   name="smokingStatus"
@@ -717,7 +774,6 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
                     </FormItem>
                   )}
                 />
-
                 <FormField
                   control={form.control}
                   name="alcoholConsumption"
@@ -751,7 +807,6 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
                     </FormItem>
                   )}
                 />
-
                 <FormField
                   control={form.control}
                   name="exerciseFrequency"
@@ -785,7 +840,6 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
                     </FormItem>
                   )}
                 />
-
                 <FormField
                   control={form.control}
                   name="dietaryRestrictions"
@@ -799,11 +853,14 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
                     </FormItem>
                   )}
                 />
-              </div>
+              </motion.div>
             )}
-
             {step === 5 && (
-              <div className="space-y-4">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-4"
+              >
                 <FormField
                   control={form.control}
                   name="emotionalState"
@@ -837,7 +894,6 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
                     </FormItem>
                   )}
                 />
-
                 <FormField
                   control={form.control}
                   name="supportSystem"
@@ -854,7 +910,6 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
                     </FormItem>
                   )}
                 />
-
                 <FormField
                   control={form.control}
                   name="workConcerns"
@@ -871,7 +926,6 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
                     </FormItem>
                   )}
                 />
-
                 <FormField
                   control={form.control}
                   name="treatmentGoals"
@@ -888,7 +942,6 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
                     </FormItem>
                   )}
                 />
-
                 <FormField
                   control={form.control}
                   name="primaryConcerns"
@@ -905,37 +958,11 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
                     </FormItem>
                   )}
                 />
-              </div>
-            )}
-          </ScrollArea>
-
-          <div className="flex justify-between pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={previousStep}
-              disabled={step === 0}
-            >
-              Previous
-            </Button>
-
-            {step === FORM_STEPS.length - 1 ? (
-              <Button type="submit" disabled={mutation.isPending}>
-                Submit
-              </Button>
-            ) : (
-              <Button type="button" onClick={nextStep}>
-                Next
-              </Button>
+              </motion.div>
             )}
           </div>
-        </form>
-      </Form>
-
-      <SchedulingModal 
-        open={showScheduling} 
-        onOpenChange={setShowScheduling}
-      />
-    </div>
+        </TypeFormQuestion>
+      </form>
+    </Form>
   );
 }

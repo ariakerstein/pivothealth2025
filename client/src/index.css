@@ -11,3 +11,33 @@
     @apply font-sans antialiased bg-background text-foreground;
   }
 }
+
+@layer components {
+  .typeform-container {
+    @apply fixed inset-0 flex items-center justify-center bg-background/95 overflow-hidden;
+  }
+
+  .typeform-question {
+    @apply max-w-2xl w-full mx-auto p-8;
+  }
+
+  .typeform-transition {
+    @apply transition-all duration-500 ease-out;
+  }
+
+  .typeform-input {
+    @apply w-full text-4xl bg-transparent border-none focus:outline-none focus:ring-0 placeholder:text-muted-foreground/50;
+  }
+
+  .typeform-progress {
+    @apply fixed top-0 left-0 w-full h-1 bg-muted;
+  }
+
+  .typeform-progress-bar {
+    @apply h-full bg-primary transition-all duration-300 ease-out;
+  }
+
+  .typeform-navigation {
+    @apply fixed bottom-8 right-8 flex gap-4;
+  }
+}
