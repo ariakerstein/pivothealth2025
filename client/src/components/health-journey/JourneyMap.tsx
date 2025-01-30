@@ -14,14 +14,27 @@ export type JourneyStage = {
   description: string;
   status: 'completed' | 'current' | 'upcoming';
   link: string;
+  onAction?: () => void;
 };
 
-const stages: JourneyStage[] = [
+interface JourneyMapProps {
+  onIntakeClick?: () => void;
+}
+
+const stages: (onIntakeClick?: () => void) => JourneyStage[] = (onIntakeClick) => [
+  {
+    id: 'intake',
+    title: 'Intake',
+    description: 'Complete your health profile',
+    status: 'current',
+    link: '#',
+    onAction: onIntakeClick
+  },
   {
     id: 'diagnose',
     title: 'Diagnose',
     description: 'Comprehensive evaluation and testing',
-    status: 'current',
+    status: 'upcoming',
     link: '/tests'
   },
   {
@@ -54,9 +67,19 @@ const stages: JourneyStage[] = [
   }
 ];
 
-export function JourneyMap() {
+export function JourneyMap({ onIntakeClick }: JourneyMapProps) {
   const [hoveredStage, setHoveredStage] = useState<string | null>(null);
   const [, navigate] = useLocation();
+
+  const handleStageClick = (stage: JourneyStage) => {
+    if (stage.onAction) {
+      stage.onAction();
+    } else {
+      navigate(stage.link);
+    }
+  };
+
+  const currentStages = stages(onIntakeClick);
 
   return (
     <div className="w-full py-8">
@@ -82,9 +105,9 @@ export function JourneyMap() {
           />
 
           {/* Stages positioned along the path */}
-          {stages.map((stage, index) => {
+          {currentStages.map((stage, index) => {
             // Calculate position along the curved path
-            const progress = index / (stages.length - 1);
+            const progress = index / (currentStages.length - 1);
             const x = 50 + progress * 500;
             // Calculate y position based on the snake-like curve
             const y = 100 + Math.sin(progress * Math.PI * 2) * 50;
@@ -97,7 +120,7 @@ export function JourneyMap() {
                       className="cursor-pointer transform transition-transform hover:scale-105"
                       onMouseEnter={() => setHoveredStage(stage.id)}
                       onMouseLeave={() => setHoveredStage(null)}
-                      onClick={() => navigate(stage.link)}
+                      onClick={() => handleStageClick(stage)}
                     >
                       {/* Glowing effect for current stage */}
                       {stage.status === 'current' && (
